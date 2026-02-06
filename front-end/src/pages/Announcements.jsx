@@ -4,43 +4,18 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Container from "@mui/material/Container";
 import AnnouncementCard from "../components/AnnouncementCard";
-import { useState } from "react";
+import { useEffect,useState } from "react";
 import AddAnnouncementModal from "../modals/AddAnnouncementModal";
-
-const announcements = [
-  {
-    id: 1,
-    title: "wejdwe",
-    description: "jwedhwedh",
-    date: "wedhwed",
-    Filière: "wedhedh",
-  },
-  {
-    id: 1,
-    title: "wejdwe",
-    description: "jwedhwedh",
-    date: "wedhwed",
-    Filière: "wedhedh",
-  },
-  {
-    id: 1,
-    title: "wejdwe",
-    description: "jwedhwedh",
-    date: "wedhwed",
-    Filière: "wedhedh",
-  },
-  {
-    id: 1,
-    title: "wejdwe",
-    description: "jwedhwedh",
-    date: "wedhwed",
-    Filière: "wedhedh",
-  },
-];
 
 export default function Announcements() {
   const [openAddAnnouncement, setOpenAddAnnouncement] = useState(false);
-
+  const [announcements, setAnnouncements] = useState([]);
+  useEffect(() => {
+    fetch("http://localhost:5000/api/announcements")
+      .then((res) => res.json())
+      .then((data) => setAnnouncements(data))
+      .catch((err) => console.error(err));
+  }, []);
   return (
     <div>
       <Navbar></Navbar>
@@ -60,7 +35,7 @@ export default function Announcements() {
             marginRight: "-170vh",
           }}
         >
-          Ajouter une annoce
+          Ajouter une annonce
         </Button>
         {announcements.map((a) => {
           return <AnnouncementCard key={a.id} announcements={a} />;

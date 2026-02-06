@@ -18,39 +18,14 @@ import CheckIcon from "@mui/icons-material/Check";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const notifications = [
-  {
-    id: 1,
-    title: "wejdwe",
-    description: "jwedhwedh",
-    date: "wedhwed",
-    Filière: "wedhedh",
-  },
-  {
-    id: 1,
-    title: "wejdwe",
-    description: "jwedhwedh",
-    date: "wedhwed",
-    Filière: "wedhedh",
-  },
-  {
-    id: 1,
-    title: "wejdwe",
-    description: "jwedhwedh",
-    date: "wedhwed",
-    Filière: "wedhedh",
-  },
-];
+
 const pages = [
-  { id: 1, name: "Announcements", to: "/announcements" },
-  { id: 2, name: "Perdus/Trouvés", to: "/objects" },
-  { id: 3, name: "Dashboard", to: "/dashboard" },
+  { id: 1, name: "Se connecter", to: "/login" },
+  { id: 2, name: "S'inscrire", to: "/register" },
 ];
 
-const settings = [{ id: 1, name: "Profile", to: "/profile" },
-                  { id: 2, name: "Logout", to: "/home" },];
 
-function Navbar() {
+function NavbarLoggedOut() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -128,22 +103,7 @@ function Navbar() {
                 </MenuItem>
               ))}
             </Menu>
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={() => setAnchorEl(null)}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              {notifications.map((n) => (
-                <MenuItem key={n.id}>
-                  {n.title}
-                  <IconButton title="marquer comme lue">
-                    <CheckIcon />
-                  </IconButton>
-                </MenuItem>
-              ))}
-            </Menu>
+           
           </Box>
           <CampaignIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
           <Typography
@@ -180,47 +140,9 @@ function Navbar() {
               </Link>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 0 }}>
-            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
-              <NotificationsIcon
-                style={{ color: "white", marginRight: "10px" }}
-              />
-            </IconButton>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <Link key={setting.id} to={setting.to}>
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    {setting.name}
-                  </Typography>
-                </MenuItem>
-                </Link>
-              ))}
-            </Menu>
-          </Box>
         </Toolbar>
       </Container>
     </AppBar>
   );
 }
-export default Navbar;
+export default NavbarLoggedOut;

@@ -7,8 +7,11 @@ import IconButton from "@mui/material/IconButton";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import { useState } from "react";
+import ModifyAnnouncementModal from "../modals/ModifyAnnouncementModal";
 
 export default function AnnouncementCard(props) {
+  const [openModifyAnnouncement, setOpenModifyAnnouncement] = useState(false);
   return (
     <Card
       className="card-hov"
@@ -55,6 +58,7 @@ export default function AnnouncementCard(props) {
             <IconButton
               className="hover-btn"
               aria-label="delete"
+              onClick={() => setOpenModifyAnnouncement(true)}
               style={{
                 color: "#1769aa",
                 background: "white",
@@ -77,6 +81,10 @@ export default function AnnouncementCard(props) {
           </Grid>
         </Grid>
       </CardContent>
+      <ModifyAnnouncementModal
+        open={openModifyAnnouncement}
+        handleClose={() => setOpenModifyAnnouncement(false)}
+      />
     </Card>
   );
 }
