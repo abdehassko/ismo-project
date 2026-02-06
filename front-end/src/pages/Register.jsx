@@ -17,6 +17,7 @@ import NativeSelect from "@mui/material/NativeSelect";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import FormHelperText from "@mui/material/FormHelperText";
 
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -63,9 +64,37 @@ export default function Register() {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     if (!form.nom.trim()) {
-      setError({ ...error, errnom: "Le titre est obligatoire" });
+      setError({ ...error, errnom: "Nom et prénom sont obligatoires" });
+      return;
+    }
+    if (!form.email.trim()) {
+      setError({ ...error, erremail: "L'email est obligatoire" });
+      return;
+    }
+    if (!form.filiere.trim()) {
+      setError({ ...error, errfiliere: "Le flière est obligatoire" });
+      return;
+    }
+    if (!form.groupe.trim()) {
+      setError({ ...error, errgroupe: "Le groupe est obligatoire" });
+      return;
+    }
+    if (!form.password.trim()) {
+      setError({ ...error, errpassword: "Le mot de passe est obligatoire" });
+      return;
+    }
+    if (!form.confirmpassword.trim()) {
+      setError({
+        ...error,
+        errconfirmpassword: "Mauvaise confirmation de mot de passe",
+      });
+      return;
+    }
+    if (!form.role.trim()) {
+      setError({ ...error, errrole: "Le rôle est obligatoire" });
       return;
     }
   };
@@ -109,6 +138,11 @@ export default function Register() {
               id="filled-basic"
               label="Email"
               variant="filled"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              error={!!error.erremail}
+              helperText={error.erremail}
               style={{ background: "white", marginBottom: "11px" }}
             />
             <FormControl
@@ -164,6 +198,9 @@ export default function Register() {
                 Mot de passe
               </InputLabel>
               <FilledInput
+                name="password"
+                value={form.password}
+                onChange={handleChange}
                 id="filled-adornment-password"
                 type={showPassword ? "text" : "password"}
                 endAdornment={
@@ -184,6 +221,9 @@ export default function Register() {
                   </InputAdornment>
                 }
               />
+              {error.errpassword && (
+                <FormHelperText>{error.errpassword}</FormHelperText>
+              )}
             </FormControl>
             <FormControl
               sx={{ marginTop: 2, background: "white " }}
@@ -266,12 +306,7 @@ export default function Register() {
             </Link>
           </CardActions>
           <CardActions>
-            <Button
-              onClick={handleSubmit}
-              disabled={form.nom === "" || form.email === ""}
-              variant="contained"
-              color="success"
-            >
+            <Button onClick={handleSubmit} variant="contained" color="success">
               Inscrivez-vous
             </Button>
           </CardActions>
