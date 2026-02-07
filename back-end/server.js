@@ -1,14 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const f = require("./routes/filiere");
 require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-const filiereRoutes = require("./routes/filiere");
-const groupeRoutes = require("./routes/groupe");
 
 app.use(cors());
 app.use(express.json());
@@ -17,10 +13,19 @@ mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error(err));
-
+//==================ABDERRAHIM===============================
+const filiereRoutes = require("./routes/filiere");
+const groupeRoutes = require("./routes/groupe");
+const initRoutes = require("./routes/init");
+app.use("/api", initRoutes);
 app.use("/api/filieres", filiereRoutes);
 app.use("/api/groupes", groupeRoutes);
+//===========================================================
 
+//=====================IDRISS================================
+// dkhol nhad lien bach yetzadolek filieres ogroupes ne db http://localhost:5000/api/init
+
+//===========================================================
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
