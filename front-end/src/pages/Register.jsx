@@ -20,9 +20,11 @@ import FormHelperText from "@mui/material/FormHelperText";
 import Radio from "@mui/material/Radio";
 
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "../api/axios";
 
 export default function Register() {
+  //Material ui
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -33,6 +35,26 @@ export default function Register() {
 
   const handleMouseUpPassword = (event) => {
     event.preventDefault();
+  };
+  //import filiere and groupes
+
+  const [filieres, setFilieres] = useState({});
+  const [groupes, setGroupes] = useState({});
+
+  useEffect(() => {
+    api
+      .get("/filieres")
+      .then((res) => setFilieres(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  const handleFiliereChange = (e) => {
+    const filiereId = e.target.value;
+
+    api
+      .get(`/groupes/${filiereId}`)
+      .then((res) => setGroupes(res.data))
+      .catch((err) => console.log(err));
   };
 
   //Control inputs
