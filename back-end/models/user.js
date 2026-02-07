@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema(
     filiere: String,
     isApproved: { type: Boolean, default: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("User", userSchema);

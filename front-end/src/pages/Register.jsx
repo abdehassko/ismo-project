@@ -14,10 +14,10 @@ import InputLabel from "@mui/material/InputLabel";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import NativeSelect from "@mui/material/NativeSelect";
-import FormGroup from "@mui/material/FormGroup";
+import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import FormHelperText from "@mui/material/FormHelperText";
+import Radio from "@mui/material/Radio";
 
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -45,15 +45,7 @@ export default function Register() {
     confirmpassword: "",
     role: "",
   });
-  const [error, setError] = useState({
-    errnom: "",
-    erremail: "",
-    errfiliere: "",
-    errgroupe: "",
-    errpassword: "",
-    errconfirmpassword: "",
-    errrole: "",
-  });
+  const [error, setError] = useState({});
 
   const handleChange = (e) => {
     const { name, type, value, checked, files } = e.target;
@@ -62,46 +54,66 @@ export default function Register() {
       ...prev,
       [name]: type === "checkbox" ? checked : type === "file" ? files : value,
     }));
+    setError({ ...error, [`err${name}`]: "" });
+  };
+
+  const validate = () => {
+    let newError = {};
+
+    if (!form.nom.trim()) {
+      newError.errnom = "Nom et prénom sont obligatoires";
+    } else {
+      const nomRegex = /^(?=.*[A-Za-z]).{6,}$/;
+      if (!nomRegex.test(form.nom)) {
+        newError.errnom = "Nom est trop court";
+      }
+    }
+
+    if (!form.email.trim()) {
+      newError.erremail = "L'email est obligatoire";
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(form.email)) {
+        newError.erremail = "L'email est invalide";
+      }
+    }
+
+    if (!form.filiere.trim())
+      newError.errfiliere = "La filière est obligatoire";
+
+    if (!form.groupe.trim()) newError.errgroupe = "Le groupe est obligatoire";
+
+    if (!form.password.trim()) {
+      newError.errpassword = "Le mot de passe est obligatoire";
+    } else {
+      const passwordRegex = /^(?=.*[A-Za-z]).{8,}$/;
+      if (!passwordRegex.test(form.password)) {
+        newError.errpassword =
+          "Mot de passe doit contenir au moins 8 caractères";
+      }
+    }
+
+    if (form.password !== form.confirmpassword || !form.confirmpassword.trim())
+      newError.errconfirmpassword = "Confirmation de mot de passe est erronée";
+
+    if (!form.role.trim()) newError.errrole = "Le rôle est obligatoire";
+
+    setError(newError);
+
+    return Object.keys(newError).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.nom.trim()) {
-      setError({ ...error, errnom: "Nom et prénom sont obligatoires" });
-      return;
-    }
-    if (!form.email.trim()) {
-      setError({ ...error, erremail: "L'email est obligatoire" });
-      return;
-    }
-    if (!form.filiere.trim()) {
-      setError({ ...error, errfiliere: "Le flière est obligatoire" });
-      return;
-    }
-    if (!form.groupe.trim()) {
-      setError({ ...error, errgroupe: "Le groupe est obligatoire" });
-      return;
-    }
-    if (!form.password.trim()) {
-      setError({ ...error, errpassword: "Le mot de passe est obligatoire" });
-      return;
-    }
-    if (!form.confirmpassword.trim()) {
-      setError({
-        ...error,
-        errconfirmpassword: "Mauvaise confirmation de mot de passe",
-      });
-      return;
-    }
-    if (!form.role.trim()) {
-      setError({ ...error, errrole: "Le rôle est obligatoire" });
-      return;
-    }
+
+    if (!validate()) return;
+
+    console.log("FORM OK", form);
   };
 
   return (
     <Container
-      maxWidth="sm"
+      maxWidth="md"
       style={{
         display: "flex",
         justifyContent: "center",
@@ -109,7 +121,7 @@ export default function Register() {
         height: "100vh",
       }}
     >
-      <Card sx={{ minWidth: 275 }} style={{ background: "#283593" }}>
+      <Card sx={{ minWidth: 500 }} style={{ background: "#283593" }}>
         <CardContent>
           <Typography
             gutterBottom
@@ -124,7 +136,7 @@ export default function Register() {
 
           <div style={{ display: "flex", flexDirection: "column" }}>
             <TextField
-              id="filled-basic"
+              id="filled-basic-nom"
               name="nom"
               value={form.nom}
               onChange={handleChange}
@@ -135,7 +147,7 @@ export default function Register() {
               helperText={error.errnom}
             />
             <TextField
-              id="filled-basic"
+              id="filled-basic-email"
               label="Email"
               variant="filled"
               name="email"
@@ -161,7 +173,7 @@ export default function Register() {
                 defaultValue={30}
                 inputProps={{
                   name: "Filière",
-                  id: "uncontrolled-native",
+                  id: "uncontrolled-native-filière",
                 }}
               >
                 <option value={10}>Ten</option>
@@ -182,7 +194,7 @@ export default function Register() {
                 defaultValue={30}
                 inputProps={{
                   name: "Filière",
-                  id: "uncontrolled-native",
+                  id: "uncontrolled-native-groupe",
                 }}
               >
                 <option value={10}>Ten</option>
@@ -191,6 +203,7 @@ export default function Register() {
               </NativeSelect>
             </FormControl>
             <FormControl
+              error={!!error.errpassword}
               sx={{ marginTop: 2, background: "white " }}
               variant="filled"
             >
@@ -201,7 +214,7 @@ export default function Register() {
                 name="password"
                 value={form.password}
                 onChange={handleChange}
-                id="filled-adornment-password"
+                id="filled-adornment-password-1"
                 type={showPassword ? "text" : "password"}
                 endAdornment={
                   <InputAdornment position="end">
@@ -222,10 +235,13 @@ export default function Register() {
                 }
               />
               {error.errpassword && (
-                <FormHelperText>{error.errpassword}</FormHelperText>
+                <FormHelperText style={{ color: "#E32727" }}>
+                  {error.errpassword}
+                </FormHelperText>
               )}
             </FormControl>
             <FormControl
+              error={!!error.errconfirmpassword}
               sx={{ marginTop: 2, background: "white " }}
               variant="filled"
             >
@@ -233,7 +249,10 @@ export default function Register() {
                 Confirme mot de passe
               </InputLabel>
               <FilledInput
-                id="filled-adornment-password"
+                id="filled-adornment-password-2"
+                name="confirmpassword"
+                value={form.confirmpassword}
+                onChange={handleChange}
                 type={showPassword ? "text" : "password"}
                 endAdornment={
                   <InputAdornment position="end">
@@ -253,8 +272,14 @@ export default function Register() {
                   </InputAdornment>
                 }
               />
+              {error.errconfirmpassword && (
+                <FormHelperText style={{ color: "#E32727" }}>
+                  {error.errconfirmpassword}
+                </FormHelperText>
+              )}
             </FormControl>
-            <FormGroup
+            <FormControl
+              error={!!error.errrole}
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -264,37 +289,39 @@ export default function Register() {
                 marginTop: "5px",
               }}
             >
-              <FormControlLabel
-                style={{ color: "white", border: "solide 2px white" }}
-                control={
-                  <Checkbox
-                    sx={{
-                      color: "white",
-                      "&.Mui-checked": {
-                        color: "black",
-                      },
-                    }}
-                  />
-                }
-                label="Formateur"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{
-                      color: "white",
-                      "&.Mui-checked": {
-                        color: "black",
-                      },
-                    }}
-                  />
-                }
-                label="Etudiant"
-              />
-            </FormGroup>
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+              >
+                <FormControlLabel
+                  value="formateur"
+                  control={<Radio />}
+                  label="Formateur"
+                />
+                <FormControlLabel
+                  value="etudiant"
+                  control={<Radio />}
+                  label="Étudiant"
+                />
+              </RadioGroup>
+            </FormControl>
+            {error.errrole && (
+              <FormHelperText sx={{ color: "#ff6b6b" }}>
+                Veuillez sélectionner un rôle
+              </FormHelperText>
+            )}
           </div>
         </CardContent>
-        <div style={{ display: "flex" }}>
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "center",
+          }}
+        >
           <CardActions>
             <Link to="/login">
               <Button
