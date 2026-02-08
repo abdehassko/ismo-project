@@ -38,8 +38,8 @@ export default function Register() {
   };
   //import filiere and groupes
 
-  const [filieres, setFilieres] = useState({});
-  const [groupes, setGroupes] = useState({});
+  const [filieres, setFilieres] = useState([]);
+  const [groupes, setGroupes] = useState([]);
 
   useEffect(() => {
     api
@@ -50,6 +50,13 @@ export default function Register() {
 
   const handleFiliereChange = (e) => {
     const filiereId = e.target.value;
+
+    setForm((prev) => ({
+      ...prev,
+      filiere: filiereId,
+      groupe: "", // reset groupe when filiere changes
+    }));
+    setError({ ...error, [`errfiliere`]: "" });
 
     api
       .get(`/groupes/${filiereId}`)
@@ -179,6 +186,14 @@ export default function Register() {
               helperText={error.erremail}
               style={{ background: "white", marginBottom: "11px" }}
             />
+            {error.errfiliere && (
+              <FormHelperText
+                style={{ display: "flex" }}
+                sx={{ color: "#ff6b6b" }}
+              >
+                {error.errfiliere}
+              </FormHelperText>
+            )}
             <FormControl
               style={{ background: "white", marginBottom: "11px" }}
               fullWidth
@@ -191,18 +206,32 @@ export default function Register() {
                 Filière
               </InputLabel>
               <NativeSelect
+                value={form.filiere}
+                onChange={handleFiliereChange}
                 style={{ marginLeft: "10px" }}
-                defaultValue={30}
                 inputProps={{
-                  name: "Filière",
+                  name: "filiere",
                   id: "uncontrolled-native-filière",
                 }}
               >
-                <option value={10}>Ten</option>
-                <option value={20}>Twenty</option>
-                <option value={30}>Thirty</option>
+                <option disabled></option>
+
+                {filieres.map((filiere) => (
+                  <option key={filiere._id} value={filiere._id}>
+                    {filiere.nom}
+                  </option>
+                ))}
               </NativeSelect>
             </FormControl>
+            {error.errgroupe && (
+              <FormHelperText
+                style={{ display: "flex" }}
+                sx={{ color: "#ff6b6b" }}
+              >
+                {error.errgroupe}
+              </FormHelperText>
+            )}
+
             <FormControl style={{ background: "white" }} fullWidth>
               <InputLabel
                 style={{ marginLeft: "10px", marginTop: "5px" }}
@@ -212,16 +241,20 @@ export default function Register() {
                 Groupe
               </InputLabel>
               <NativeSelect
+                value={form.groupe}
+                onChange={handleChange}
                 style={{ marginLeft: "10px" }}
-                defaultValue={30}
                 inputProps={{
-                  name: "Filière",
+                  name: "groupe",
                   id: "uncontrolled-native-groupe",
                 }}
               >
-                <option value={10}>Ten</option>
-                <option value={20}>Twenty</option>
-                <option value={30}>Thirty</option>
+                <option disabled></option>
+                {groupes.map((groupe) => (
+                  <option key={groupe._id} value={groupe._id}>
+                    {groupe.nom}
+                  </option>
+                ))}
               </NativeSelect>
             </FormControl>
             <FormControl
@@ -331,8 +364,11 @@ export default function Register() {
               </RadioGroup>
             </FormControl>
             {error.errrole && (
-              <FormHelperText sx={{ color: "#ff6b6b" }}>
-                Veuillez sélectionner un rôle
+              <FormHelperText
+                style={{ display: "flex", justifyContent: "center" }}
+                sx={{ color: "#ff6b6b" }}
+              >
+                {error.errrole}
               </FormHelperText>
             )}
           </div>
