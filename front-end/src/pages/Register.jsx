@@ -150,12 +150,22 @@ export default function Register() {
     return Object.keys(newError).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
 
+    const data = new FormData();
+    Object.keys(form).forEach((key) => {
+      data.append(key, form[key]);
+    });
+
+    await api.post("/registration/register", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
     console.log("FORM OK", form);
+    alert("Inscription envoyée, en attente de validation");
   };
 
   return (

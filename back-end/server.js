@@ -17,9 +17,14 @@ mongoose
 const filiereRoutes = require("./routes/filiere");
 const groupeRoutes = require("./routes/groupe");
 const initRoutes = require("./routes/init");
+const authRoutes = require("./routes/registration");
+
 app.use("/api", initRoutes);
 app.use("/api/filieres", filiereRoutes);
 app.use("/api/groupes", groupeRoutes);
+app.use("/uploads", express.static("uploads"));
+app.use("/api/registration", authRoutes);
+
 //===========================================================
 
 //=====================IDRISS================================
