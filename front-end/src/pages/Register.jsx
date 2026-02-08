@@ -18,10 +18,24 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import Radio from "@mui/material/Radio";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { styled } from "@mui/material/styles";
 
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api from "../api/axios";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 export default function Register() {
   //Material ui
@@ -36,6 +50,7 @@ export default function Register() {
   const handleMouseUpPassword = (event) => {
     event.preventDefault();
   };
+
   //import filiere and groupes
 
   const [filieres, setFilieres] = useState([]);
@@ -73,6 +88,7 @@ export default function Register() {
     password: "",
     confirmpassword: "",
     role: "",
+    image: null,
   });
   const [error, setError] = useState({});
 
@@ -81,7 +97,8 @@ export default function Register() {
 
     setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : type === "file" ? files : value,
+      [name]:
+        type === "checkbox" ? checked : type === "file" ? files[0] : value,
     }));
     setError({ ...error, [`err${name}`]: "" });
   };
@@ -126,6 +143,7 @@ export default function Register() {
       newError.errconfirmpassword = "Confirmation de mot de passe est erronée";
 
     if (!form.role.trim()) newError.errrole = "Le rôle est obligatoire";
+    if (!form.image) newError.errimage = "L'image est obligatoire";
 
     setError(newError);
 
@@ -333,6 +351,19 @@ export default function Register() {
                 </FormHelperText>
               )}
             </FormControl>
+
+            {error.errrole && (
+              <FormHelperText
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "10px",
+                }}
+                sx={{ color: "#ff6b6b" }}
+              >
+                {error.errrole}
+              </FormHelperText>
+            )}
             <FormControl
               error={!!error.errrole}
               style={{
@@ -341,7 +372,6 @@ export default function Register() {
                 justifyContent: "space-around",
                 color: "white",
                 border: "solide 2px white",
-                marginTop: "5px",
               }}
             >
               <RadioGroup
@@ -363,14 +393,35 @@ export default function Register() {
                 />
               </RadioGroup>
             </FormControl>
-            {error.errrole && (
+            {form.image && (
+              <Typography sx={{ color: "#78f85e" }} variant="caption">
+                {form.image.name}
+              </Typography>
+            )}
+            {error.errimage && (
               <FormHelperText
                 style={{ display: "flex", justifyContent: "center" }}
                 sx={{ color: "#ff6b6b" }}
               >
-                {error.errrole}
+                {error.errimage}
               </FormHelperText>
             )}
+
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+            >
+              Choisissez votre image
+              <VisuallyHiddenInput
+                name="image"
+                type="file"
+                accept="image/*"
+                onChange={handleChange}
+              />
+            </Button>
           </div>
         </CardContent>
         <div
