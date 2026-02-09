@@ -19,6 +19,7 @@ const groupeRoutes = require("./routes/groupe");
 const initRoutes = require("./routes/init");
 const authRoutes = require("./routes/registration");
 const checkEmail = require("./routes/check-email");
+const usersRequests = require("./routes/usersRequests");
 
 app.use("/api", initRoutes);
 app.use("/api/filieres", filiereRoutes);
@@ -26,6 +27,7 @@ app.use("/api/groupes", groupeRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/registration", authRoutes);
 app.use("/api", checkEmail);
+app.use("/api", usersRequests);
 
 //===========================================================
 
