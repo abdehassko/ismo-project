@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Container from "@mui/material/Container";
 import AnnouncementCard from "../components/AnnouncementCard";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import AddAnnouncementModal from "../modals/AddAnnouncementModal";
 
 export default function Announcements() {

@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post(
   "/register",
-  upload.single("image"), // 👈 multer
+  upload.single("image"), // multer
   async (req, res) => {
     const { nom, email, filiere, groupe, role, password } = req.body;
     try {

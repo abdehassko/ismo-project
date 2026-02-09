@@ -1,4 +1,4 @@
-import express from "express";
+const express = require("express");
 
 const router = express.Router();
 
@@ -23,4 +23,4 @@ router.get("/announcements", (req, res) => {
   res.json(announcements);
 });
 
-export default router;
+module.exports = router;

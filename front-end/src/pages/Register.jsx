@@ -79,6 +79,20 @@ export default function Register() {
       .catch((err) => console.log(err));
   };
 
+  //check duplicated email
+  async function checkEmail(email) {
+    try {
+      const res = await api.post("/check-email", { email });
+      return { valid: true, message: res.data.message };
+    } catch (err) {
+      if (err.response?.status === 409) {
+        return { valid: false, message: "Email already exists" };
+      }
+
+      return { valid: false, message: "Server error" };
+    }
+  }
+
   //Control inputs
   const [form, setForm] = useState({
     nom: "",
@@ -103,7 +117,7 @@ export default function Register() {
     setError({ ...error, [`err${name}`]: "" });
   };
 
-  const validate = () => {
+  const validate = async () => {
     let newError = {};
 
     if (!form.nom.trim()) {
@@ -121,6 +135,11 @@ export default function Register() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(form.email)) {
         newError.erremail = "L'email est invalide";
+      } else {
+        const result = await checkEmail(form.email);
+        if (!result.valid) {
+          newError.erremail = result.message;
+        }
       }
     }
 
@@ -153,7 +172,8 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validate()) return;
+    const isValid = await validate();
+    if (!isValid) return;
 
     const data = new FormData();
     Object.keys(form).forEach((key) => {

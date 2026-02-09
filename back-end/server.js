@@ -18,17 +18,22 @@ const filiereRoutes = require("./routes/filiere");
 const groupeRoutes = require("./routes/groupe");
 const initRoutes = require("./routes/init");
 const authRoutes = require("./routes/registration");
+const checkEmail = require("./routes/check-email");
 
 app.use("/api", initRoutes);
 app.use("/api/filieres", filiereRoutes);
 app.use("/api/groupes", groupeRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use("/api/registration", authRoutes);
+app.use("/api", checkEmail);
 
 //===========================================================
 
 //=====================IDRISS================================
 // dkhol nhad lien bach yetzadolek filieres ogroupes ne db http://localhost:5000/api/init
+const annoucements = require("./routes/announcements");
+
+app.use("/api", annoucements);
 
 //===========================================================
 app.listen(PORT, () => {
