@@ -1,70 +1,153 @@
-# Getting Started with Create React App
+🎓 Institute Management System (MERN Stack)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack web application for managing institute registrations, user validation, and role-based access control.
 
-## Available Scripts
+Built with the MERN Stack:
 
-In the project directory, you can run:
+MongoDB
 
-### `npm start`
+Express.js
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+React.js
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Node.js
 
-### `npm test`
+🚀 Features
+👤 User Registration
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Register as:
 
-### `npm run build`
+Admin
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Formateur
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Étudiant
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Profile image upload
 
-### `npm run eject`
+Password hashing (bcrypt)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Email duplication validation
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Default account status: pending
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+🔐 Authentication
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Login with JWT
 
-## Learn More
+Role-based access control
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Only accepted users can login
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+🛠 Admin Dashboard
 
-### Code Splitting
+View pending registrations
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Accept user
 
-### Analyzing the Bundle Size
+Reject user
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Protected admin-only routes
 
-### Making a Progressive Web App
+🧱 Project Structure
+client/
+  ├── components/
+  ├── pages/
+  ├── api/
+server/
+  ├── models/
+  ├── routes/
+  ├── middlewares/
+  ├── uploads/
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+🛢 Database
 
-### Advanced Configuration
+MongoDB with Mongoose schemas.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+User Model Fields
 
-### Deployment
+nom
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+email (unique)
 
-### `npm run build` fails to minify
+password (hashed)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+filiere (ObjectId)
+
+groupe (ObjectId)
+
+role
+
+image
+
+status (pending / accepted / rejected)
+
+⚙️ Installation
+1️⃣ Clone repository
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+cd YOUR_REPO
+
+2️⃣ Backend Setup
+cd server
+npm install
+
+
+Create .env file:
+
+PORT=5000
+MONGO_URI=your_mongodb_connection
+JWT_SECRET=your_secret_key
+
+
+Start backend:
+
+npm run dev
+
+3️⃣ Frontend Setup
+cd client
+npm install
+npm start
+
+🔑 Environment Variables
+Variable	Description
+MONGO_URI	MongoDB connection string
+JWT_SECRET	Secret for signing tokens
+PORT	Backend port
+🧪 Technologies Used
+
+React
+
+Material UI
+
+Axios
+
+Node.js
+
+Express
+
+MongoDB
+
+Mongoose
+
+JWT
+
+bcrypt
+
+Multer
+
+📌 Future Improvements
+
+Email verification
+
+Password reset
+
+Pagination
+
+Search & filtering
+
+Deployment
+
+👨‍💻 Author
+
+Your Name
+Full Stack MERN Developer
