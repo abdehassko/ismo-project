@@ -1,4 +1,4 @@
-🎓 Institute Management System (MERN Stack)
+##🎓 Institute Management System (MERN Stack)
 
 A full-stack web application for managing institute registrations, user validation, and role-based access control.
 
