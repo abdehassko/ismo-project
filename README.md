@@ -18,7 +18,7 @@ ISMOPROJECT is a **REACT/EXPRESS JS-based academic Announecement sharing platfor
 ## 📁 Project Structure
 
 ```
-fron-end/
+front-end/
   ├── components/
   ├── pages/
   ├── api/
@@ -33,10 +33,10 @@ back-end/
 
 ## ⚙️ Requirements
 
-* PHP >= 8.0
-* MySQL / MariaDB
-* XAMPP / WAMP / LAMP
-* Web browser
+* 
+* 
+* 
+* 
 
 ---
 
