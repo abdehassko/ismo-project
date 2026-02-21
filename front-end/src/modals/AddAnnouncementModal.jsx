@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
@@ -33,34 +34,92 @@ const names = [
   "Kelly Snyder",
 ];
 
-const AddAnnouncementModal = ({ open, handleClose }) => {
-  const [personName, setPersonName] = React.useState([]);
+const AddAnnouncementModal = ({ open, handleClose, fetchAnnouncements }) => {
+  const [formData, setFormData] = useState({
+  title: "",
+  description: "",
+  attachment: String,
+  filiere: [],
+  groupe: [],
+});
 
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value,
-    );
-  };
+  const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  setFormData((prev) => ({
+    ...prev,
+    [name]: typeof value === "string" ? value.split(",") : value,
+  }));
+};
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log("SUBMITTED");
+
+  try {
+    const res = await fetch("http://localhost:5000/api/announcements", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message);
+      return;
+    }
+
+    alert("Announcement added successfully");
+
+    // optional reset
+    setFormData({ title: "", description: "" });
+
+    // close modal
+    handleClose();
+
+    // refresh list (IMPORTANT)
+    fetchAnnouncements();
+
+  } catch (error) {
+    console.error(error);
+    alert("Server error");
+  }
+};
+
+
   return (
     <Dialog open={open} onClose={handleClose} fullWidth>
       <DialogTitle>Ajouter une annonce</DialogTitle>
-      <DialogContent>
-        <TextField style={{ marginTop: "10px" }} label="Titre" fullWidth />
+      <DialogContent> <form onSubmit={handleSubmit}></form>
+        <TextField
+         style={{ marginTop: "10px" }}
+          label="Title"
+          name="title"
+          fullWidth
+          value={formData.title}
+          onChange={handleChange}
+          required/>
         <TextField
           style={{ marginTop: "10px" }}
           label="Description"
-          fullWidth
+          name="description"
           multiline
+          rows={4}
+          fullWidth
+          value={formData.description}
+          onChange={handleChange}
+          required
+          sx={{ mt: 2 }}
         />
         <FormControl style={{ marginTop: "10px" }} fullWidth>
           <Select
             multiple
             displayEmpty
-            value={personName}
+            name="filiere"
+            value={formData.filiere}
             onChange={handleChange}
             input={<OutlinedInput />}
             renderValue={(selected) => {
@@ -87,7 +146,8 @@ const AddAnnouncementModal = ({ open, handleClose }) => {
           <Select
             multiple
             displayEmpty
-            value={personName}
+            name="groupe"
+            value={formData.groupe}
             onChange={handleChange}
             input={<OutlinedInput />}
             renderValue={(selected) => {
@@ -114,7 +174,9 @@ const AddAnnouncementModal = ({ open, handleClose }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Annuler</Button>
-        <Button variant="contained">Ajouter</Button>
+        <Button type="submit" variant="contained" sx={{ mt: 3 }}>
+          Ajouter
+        </Button>
       </DialogActions>
     </Dialog>
   );

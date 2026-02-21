@@ -11,6 +11,15 @@ export default function Announcements() {
   const [openAddAnnouncement, setOpenAddAnnouncement] = useState(false);
   const [announcements, setAnnouncements] = useState([]);
   useEffect(() => {
+  fetchAnnouncements();
+}, []);
+  const fetchAnnouncements = async () => {
+  const res = await fetch("http://localhost:5000/api/announcements");
+  const data = await res.json();
+  setAnnouncements(data);
+};
+
+  useEffect(() => {
     fetch("http://localhost:5000/api/announcements")
       .then((res) => res.json())
       .then((data) => setAnnouncements(data))
@@ -37,13 +46,16 @@ export default function Announcements() {
         >
           Ajouter une annonce
         </Button>
-        {announcements.map((a) => {
-          return <AnnouncementCard key={a.id} announcements={a} />;
-        })}
+        {Array.isArray(announcements) &&
+        announcements.map((a) => (
+          <AnnouncementCard key={a._id} announcements={a} />
+  ))
+}
       </Container>
       <AddAnnouncementModal
         open={openAddAnnouncement}
         handleClose={() => setOpenAddAnnouncement(false)}
+        fetchAnnouncements={fetchAnnouncements}
       />
     </div>
   );
