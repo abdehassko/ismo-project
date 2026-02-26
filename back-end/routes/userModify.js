@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user");
+const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
 router.put("/:id", async (req, res) => {
@@ -15,11 +15,9 @@ router.put("/:id", async (req, res) => {
       updateData.password = await bcrypt.hash(password, salt);
     }
 
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true }
-    );
+    const user = await User.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+    });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Container from "@mui/material/Container";
 import AnnouncementCard from "../components/AnnouncementCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import AddAnnouncementModal from "../modals/AddAnnouncementModal";
 import api from "../api/axios";
 import { getUser } from "../auth";
@@ -13,13 +13,10 @@ export default function Announcements() {
   const [openAddAnnouncement, setOpenAddAnnouncement] = useState(false);
   const [announcements, setAnnouncements] = useState([]);
   const user = getUser();
-  const isAdminOrFormateur = user?.role === "admin" || user?.role === "formateur";
+  const isAdminOrFormateur =
+    user?.role === "admin" || user?.role === "formateur";
 
-  useEffect(() => {
-    fetchAnnouncements();
-  }, []);
-
-  const fetchAnnouncements = async () => {
+  const fetchAnnouncements = useCallback(async () => {
     try {
       const res = await api.get("/announcements", {
         params: {
@@ -32,7 +29,11 @@ export default function Announcements() {
     } catch (err) {
       console.error(err);
     }
-  };
+  }, [user]); // dependency
+
+  useEffect(() => {
+    fetchAnnouncements();
+  }, [fetchAnnouncements]);
 
   return (
     <div>

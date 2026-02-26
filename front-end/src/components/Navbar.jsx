@@ -17,6 +17,7 @@ import CheckIcon from "@mui/icons-material/Check";
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { logout } from "../auth";
 
 const notifications = [
   {
@@ -45,11 +46,6 @@ const pages = [
   { id: 1, name: "Announcements", to: "/announcements" },
   { id: 2, name: "Perdus/Trouvés", to: "/objects" },
   { id: 3, name: "Dashboard", to: "/dashboard" },
-];
-
-const settings = [
-  { id: 1, name: "Profile", to: "/profile" },
-  { id: 2, name: "Logout", to: "/home" },
 ];
 
 function Navbar() {
@@ -209,19 +205,22 @@ function Navbar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <Link
-                  style={{ textDecoration: "none", color: "inherit" }}
-                  key={setting.id}
-                  to={setting.to}
-                >
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography sx={{ textAlign: "center" }}>
-                      {setting.name}
-                    </Typography>
-                  </MenuItem>
-                </Link>
-              ))}
+              <Link
+                style={{ textDecoration: "none", color: "inherit" }}
+                to={"/profile"}
+              >
+                <MenuItem onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: "center" }}>Profile</Typography>
+                </MenuItem>
+              </Link>
+              <Link
+                style={{ textDecoration: "none", color: "inherit" }}
+                onClick={logout}
+              >
+                <MenuItem onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: "center" }}>Logout</Typography>
+                </MenuItem>
+              </Link>
             </Menu>
           </Box>
         </Toolbar>
