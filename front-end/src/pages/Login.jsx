@@ -13,13 +13,11 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -40,30 +38,24 @@ export default function Login() {
         return;
       }
 
-      alert("Welcome " + data.user.fullName);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-      console.log(data.user);
+      window.location.href = "/announcements";
+
     } catch (error) {
       console.error(error);
     }
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event) => event.preventDefault();
+  const handleMouseUpPassword = (event) => event.preventDefault();
 
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
-  const handleMouseUpPassword = (event) => {
-    event.preventDefault();
-  };
   return (
     <Container
       maxWidth="sm"
@@ -78,15 +70,10 @@ export default function Login() {
         <CardContent>
           <Typography
             gutterBottom
-            sx={{
-              color: "white",
-              fontSize: 45,
-              fontFamily: "CostumBold",
-            }}
+            sx={{ color: "white", fontSize: 45, fontFamily: "CostumBold" }}
           >
             Connexion
           </Typography>
-
           <div style={{ display: "flex", flexDirection: "column" }}>
             <TextField
               id="filled-basic"
@@ -97,10 +84,7 @@ export default function Login() {
               onChange={handleChange}
               style={{ background: "white", marginBottom: "11px" }}
             />
-            <FormControl
-              sx={{ marginTop: 2, background: "white " }}
-              variant="filled"
-            >
+            <FormControl sx={{ marginTop: 2, background: "white" }} variant="filled">
               <InputLabel htmlFor="filled-adornment-password">
                 Mot de passe
               </InputLabel>
@@ -113,11 +97,7 @@ export default function Login() {
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
-                      aria-label={
-                        showPassword
-                          ? "hide the password"
-                          : "display the password"
-                      }
+                      aria-label={showPassword ? "hide the password" : "display the password"}
                       onClick={handleClickShowPassword}
                       onMouseDown={handleMouseDownPassword}
                       onMouseUp={handleMouseUpPassword}
@@ -134,10 +114,7 @@ export default function Login() {
         <div style={{ display: "flex" }}>
           <CardActions>
             <Link to="/register">
-              <Button
-                variant="contained"
-                style={{ background: "#ffffff", color: "black" }}
-              >
+              <Button variant="contained" style={{ background: "#ffffff", color: "black" }}>
                 Inscrivez-vous
               </Button>
             </Link>
