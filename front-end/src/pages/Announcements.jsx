@@ -6,16 +6,24 @@ import Container from "@mui/material/Container";
 import AnnouncementCard from "../components/AnnouncementCard";
 import { useEffect, useState } from "react";
 import AddAnnouncementModal from "../modals/AddAnnouncementModal";
+import api from "../api/axios";
 
 export default function Announcements() {
   const [openAddAnnouncement, setOpenAddAnnouncement] = useState(false);
   const [announcements, setAnnouncements] = useState([]);
   useEffect(() => {
-    fetch("http://localhost:5000/api/announcements")
-      .then((res) => res.json())
-      .then((data) => setAnnouncements(data))
-      .catch((err) => console.error(err));
-  }, []);
+  fetchAnnouncements();
+}, []);
+  const fetchAnnouncements = async () => {
+  try {
+    const res = await api.get("/announcements");
+    setAnnouncements(res.data);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+
   return (
     <div>
       <Navbar></Navbar>
@@ -37,13 +45,16 @@ export default function Announcements() {
         >
           Ajouter une annonce
         </Button>
-        {announcements.map((a) => {
-          return <AnnouncementCard key={a.id} announcements={a} />;
-        })}
+        {Array.isArray(announcements) &&
+        announcements.map((a) => (
+          <AnnouncementCard key={a._id} announcements={a} />
+  ))
+}
       </Container>
       <AddAnnouncementModal
         open={openAddAnnouncement}
         handleClose={() => setOpenAddAnnouncement(false)}
+        fetchAnnouncements={fetchAnnouncements}
       />
     </div>
   );

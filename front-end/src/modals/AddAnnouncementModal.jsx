@@ -1,4 +1,5 @@
 import React from "react";
+import { useState,useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
@@ -9,6 +10,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import api from "../api/axios"
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -20,55 +22,131 @@ const MenuProps = {
     },
   },
 };
-const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
-];
 
-const AddAnnouncementModal = ({ open, handleClose }) => {
-  const [personName, setPersonName] = React.useState([]);
 
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value,
-    );
-  };
+const AddAnnouncementModal = ({ open, handleClose, fetchAnnouncements }) => {
+  const [formData, setFormData] = useState({
+  title: "",
+  description: "",
+  attachment: "",
+  filiere: [],
+  groupe: [],
+});
+
+//import filiere and groupes
+
+  const [filieres, setFilieres] = useState([]);
+  const [groupes, setGroupes] = useState([]);
+
+
+  useEffect(() => {
+    api
+      .get("/filieres")
+      .then((res) => {
+      console.log("filieres data:", res.data); // add this
+      setFilieres(res.data);
+    })
+      .catch((err) => console.log(err));
+  }, []);
+
+  const handleFiliereChange = (e) => {
+  const value = e.target.value;
+  const selected = typeof value === "string" ? value.split(",") : value;
+
+  setFormData((prev) => ({
+    ...prev,
+    filiere: selected,
+    groupe: [],
+  }));
+
+  // fetch groupes for all selected filieres
+  Promise.all(selected.map((id) => api.get(`/groupes/${id}`)))
+    .then((responses) => {
+      const allGroupes = responses.flatMap((res) => res.data);
+      // remove duplicates by _id
+      const unique = allGroupes.filter(
+        (g, index, self) => index === self.findIndex((x) => x._id === g._id)
+      );
+      setGroupes(unique);
+    })
+    .catch((err) => console.log(err));
+};
+
+  const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    [name]: name === "filiere" || name === "groupe"
+      ? typeof value === "string" ? value.split(",") : value
+      : value,
+  }));
+};
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log("SUBMITTED");
+
+  try {
+    // ✅ Replace with this
+await api.post("/announcements", formData);
+alert("Announcement added successfully");
+
+    // optional reset
+    setFormData({ title: "", description: "", attachment: "", filiere: [], groupe: [] });
+
+    // close modal
+    handleClose();
+
+    // refresh list (IMPORTANT)
+    fetchAnnouncements();
+
+  } catch (error) {
+    console.error(error);
+    alert("Server error");
+  }
+};
+
+
   return (
     <Dialog open={open} onClose={handleClose} fullWidth>
       <DialogTitle>Ajouter une annonce</DialogTitle>
-      <DialogContent>
-        <TextField style={{ marginTop: "10px" }} label="Titre" fullWidth />
+      <DialogContent> <form id="announcement-form" onSubmit={handleSubmit}>
+        <TextField
+         style={{ marginTop: "10px" }}
+          label="Title"
+          name="title"
+          fullWidth
+          value={formData.title}
+          onChange={handleChange}
+          required/>
         <TextField
           style={{ marginTop: "10px" }}
           label="Description"
-          fullWidth
+          name="description"
           multiline
+          rows={4}
+          fullWidth
+          value={formData.description}
+          onChange={handleChange}
+          required
+          sx={{ mt: 2 }}
         />
         <FormControl style={{ marginTop: "10px" }} fullWidth>
           <Select
             multiple
             displayEmpty
-            value={personName}
-            onChange={handleChange}
+            name="filiere"
+            value={formData.filiere}
+            onChange={handleFiliereChange}
             input={<OutlinedInput />}
             renderValue={(selected) => {
               if (selected.length === 0) {
                 return <em>Filière</em>;
               }
-
-              return selected.join(", ");
+              return filieres
+                .filter((f) => selected.includes(f._id))
+                .map((f) => f.nom)
+                .join(", ");
             }}
             MenuProps={MenuProps}
             inputProps={{ "aria-label": "Without label" }}
@@ -76,9 +154,9 @@ const AddAnnouncementModal = ({ open, handleClose }) => {
             <MenuItem disabled value="">
               <em>Filière</em>
             </MenuItem>
-            {names.map((name) => (
-              <MenuItem key={name} value={name}>
-                {name}
+            {filieres.map((filiere) => (
+              <MenuItem key={filiere._id} value={filiere._id}>
+                {filiere.nom}
               </MenuItem>
             ))}
           </Select>
@@ -87,15 +165,18 @@ const AddAnnouncementModal = ({ open, handleClose }) => {
           <Select
             multiple
             displayEmpty
-            value={personName}
+            name="groupe"
+            value={formData.groupe}
             onChange={handleChange}
             input={<OutlinedInput />}
             renderValue={(selected) => {
               if (selected.length === 0) {
                 return <em>Groupe</em>;
               }
-
-              return selected.join(", ");
+              return groupes
+                .filter((g) => selected.includes(g._id))
+                .map((g) => g.nom)
+                .join(", ");
             }}
             MenuProps={MenuProps}
             inputProps={{ "aria-label": "Without label" }}
@@ -103,18 +184,21 @@ const AddAnnouncementModal = ({ open, handleClose }) => {
             <MenuItem disabled value="">
               <em>Groupe</em>
             </MenuItem>
-            {names.map((name) => (
-              <MenuItem key={name} value={name}>
-                {name}
+            {groupes.map((groupe) => (
+              <MenuItem key={groupe._id} value={groupe._id}>
+                {groupe.nom}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
         <TextField style={{ marginTop: "10px" }} type="file" fullWidth />
+      </form>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Annuler</Button>
-        <Button variant="contained">Ajouter</Button>
+        <Button type="submit" form="announcement-form" variant="contained" sx={{ mt: 3 }}>
+          Ajouter
+        </Button>
       </DialogActions>
     </Dialog>
   );
