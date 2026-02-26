@@ -11,14 +11,16 @@ router.get("/", async (req, res) => {
   }
 });
 
-
 router.post("/", async (req, res) => {
   try {
-    const { title, description, attachment, filiere, groupe, createdBy } = req.body;
+    const { title, description, attachment, filiere, groupe, createdBy } =
+      req.body;
 
     // Validate required fields
     if (!title || !description) {
-      return res.status(400).json({ message: "Title and description are required" });
+      return res
+        .status(400)
+        .json({ message: "Title and description are required" });
     }
 
     // Create announcement with optional fields

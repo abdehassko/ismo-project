@@ -18,11 +18,15 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error(err));
 
+const protectedRoutes = require("./routes/protected");
+
+app.use("/api/protected", protectedRoutes);
+
 const announcementRoutes = require("./routes/announcements");
 
 app.use("/api/announcements", announcementRoutes);
 console.log("announcements route registered");
-  //==================ABDERRAHIM===============================
+//==================ABDERRAHIM===============================
 const filiereRoutes = require("./routes/filiere");
 const groupeRoutes = require("./routes/groupe");
 const initRoutes = require("./routes/init");
@@ -30,7 +34,6 @@ const authRoutes = require("./routes/registration");
 const checkEmail = require("./routes/check-email");
 const usersRequests = require("./routes/usersRequests");
 const Objects = require("./routes/Objects");
-
 
 app.use("/api", initRoutes);
 app.use("/api/filieres", filiereRoutes);

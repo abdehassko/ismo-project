@@ -11,12 +11,10 @@ router.post(
   async (req, res) => {
     const { nom, email, filiere, groupe, role, password } = req.body;
     try {
-      const hashedPassword = await bcrypt.hash(password, 10);
-
       const user = new User({
         fullName: nom,
         email: email,
-        password: hashedPassword,
+        password: password,
         filiere: filiere,
         groupe: groupe,
         role: role,

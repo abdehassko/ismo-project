@@ -7,43 +7,27 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import CampaignIcon from "@mui/icons-material/Campaign";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import CheckIcon from "@mui/icons-material/Check";
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
 
 const pages = [
   { id: 1, name: "Se connecter", to: "/login" },
   { id: 2, name: "S'inscrire", to: "/register" },
 ];
 
-
 function NavbarLoggedOut() {
   const [anchorElNav, setAnchorElNav] = useState(null);
-  const [anchorElUser, setAnchorElUser] = useState(null);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
   };
 
   return (
@@ -103,7 +87,6 @@ function NavbarLoggedOut() {
                 </MenuItem>
               ))}
             </Menu>
-           
           </Box>
           <CampaignIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
           <Typography

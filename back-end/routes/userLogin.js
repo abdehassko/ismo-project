@@ -2,10 +2,12 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 router.post("/", async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log("Login attempt:", req.body);
 
     // 1️⃣ check user exists
     const user = await User.findOne({ email });
@@ -21,8 +23,14 @@ router.post("/", async (req, res) => {
     }
 
     // 3️⃣ success
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" },
+    );
     res.json({
       message: "Login successful",
+      token,
       user: {
         id: user._id,
         fullName: user.fullName,

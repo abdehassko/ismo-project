@@ -180,8 +180,21 @@ export default function Register() {
       data.append(key, form[key]);
     });
 
-    await api.post("/registration/register", data, {
-      headers: { "Content-Type": "multipart/form-data" },
+    try {
+      const res = await api.post("/registration/register", data);
+      console.log(res.data);
+    } catch (error) {
+      console.log("Full error:", error.response);
+    }
+    setForm({
+      nom: "",
+      email: "",
+      filiere: "",
+      groupe: "",
+      password: "",
+      confirmpassword: "",
+      role: "",
+      image: null,
     });
 
     console.log("FORM OK", form);
