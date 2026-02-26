@@ -47,8 +47,10 @@ const pages = [
   { id: 3, name: "Dashboard", to: "/dashboard" },
 ];
 
-const settings = [{ id: 1, name: "Profile", to: "/profile" },
-                  { id: 2, name: "Logout", to: "/home" },];
+const settings = [
+  { id: 1, name: "Profile", to: "/profile" },
+  { id: 2, name: "Logout", to: "/home" },
+];
 
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -208,12 +210,16 @@ function Navbar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <Link key={setting.id} to={setting.to}>
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    {setting.name}
-                  </Typography>
-                </MenuItem>
+                <Link
+                  style={{ textDecoration: "none", color: "inherit" }}
+                  key={setting.id}
+                  to={setting.to}
+                >
+                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                    <Typography sx={{ textAlign: "center" }}>
+                      {setting.name}
+                    </Typography>
+                  </MenuItem>
                 </Link>
               ))}
             </Menu>

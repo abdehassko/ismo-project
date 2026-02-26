@@ -2,10 +2,19 @@ const express = require("express");
 const router = express.Router();
 const Announcement = require("../models/announcement");
 
+router.get("/", async (req, res) => {
+  try {
+    const announcements = await Announcement.find();
+    res.status(200).json(announcements);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
 
 router.post("/", async (req, res) => {
   try {
-    const { title, description, attachment, filiere, group, createdBy } = req.body;
+    const { title, description, attachment, filiere, groupe, createdBy } = req.body;
 
     // Validate required fields
     if (!title || !description) {
@@ -18,7 +27,7 @@ router.post("/", async (req, res) => {
       description,
       attachment: attachment || null,
       filiere: filiere || [],
-      group: group || [],
+      groupe: groupe || [],
       createdBy: createdBy || null,
     });
 
@@ -26,61 +35,6 @@ router.post("/", async (req, res) => {
   } catch (error) {
     console.error("POST /api/announcements error:", error); // logs in terminal
     res.status(500).json({ message: "Server error", error: error.message });
-  }
-});
-
-
-
-// ✅ GET all announcements
-router.get("/", async (req, res) => {
-  try {
-    const announcements = await Announcement.find().sort({ createdAt: -1 });
-    res.json(announcements);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-
-// ✅ GET one announcement
-router.get("/:id", async (req, res) => {
-  try {
-    const announcement = await Announcement.findById(req.params.id);
-
-    if (!announcement) {
-      return res.status(404).json({ message: "Announcement not found" });
-    }
-
-    res.json(announcement);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-
-// ✅ UPDATE announcement
-router.put("/:id", async (req, res) => {
-  try {
-    const updated = await Announcement.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-
-    res.json(updated);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-
-// ✅ DELETE announcement
-router.delete("/:id", async (req, res) => {
-  try {
-    await Announcement.findByIdAndDelete(req.params.id);
-    res.json({ message: "Announcement deleted" });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
   }
 });
 

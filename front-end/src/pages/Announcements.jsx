@@ -4,8 +4,9 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Container from "@mui/material/Container";
 import AnnouncementCard from "../components/AnnouncementCard";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import AddAnnouncementModal from "../modals/AddAnnouncementModal";
+import api from "../api/axios";
 
 export default function Announcements() {
   const [openAddAnnouncement, setOpenAddAnnouncement] = useState(false);
@@ -14,17 +15,15 @@ export default function Announcements() {
   fetchAnnouncements();
 }, []);
   const fetchAnnouncements = async () => {
-  const res = await fetch("http://localhost:5000/api/announcements");
-  const data = await res.json();
-  setAnnouncements(data);
+  try {
+    const res = await api.get("/announcements");
+    setAnnouncements(res.data);
+  } catch (err) {
+    console.error(err);
+  }
 };
 
-  useEffect(() => {
-    fetch("http://localhost:5000/api/announcements")
-      .then((res) => res.json())
-      .then((data) => setAnnouncements(data))
-      .catch((err) => console.error(err));
-  }, []);
+
   return (
     <div>
       <Navbar></Navbar>

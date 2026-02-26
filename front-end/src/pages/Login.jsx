@@ -20,6 +20,42 @@ import { useState } from "react";
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
+  const [formData, setFormData] = useState({
+  email: "",
+  password: "",
+});
+
+const handleLogin = async () => {
+  try {
+    const res = await fetch("http://localhost:5000/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message);
+      return;
+    }
+
+    alert("Welcome " + data.user.fullName);
+
+    console.log(data.user);
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const handleChange = (e) => {
+  setFormData({
+    ...formData,
+    [e.target.name]: e.target.value,
+  });
+};
+
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
@@ -55,8 +91,11 @@ export default function Login() {
           <div style={{ display: "flex", flexDirection: "column" }}>
             <TextField
               id="filled-basic"
+              name="email"
               label="Email"
               variant="filled"
+              value={formData.email}
+              onChange={handleChange}
               style={{ background: "white", marginBottom: "11px" }}
             />
             <FormControl
@@ -68,7 +107,10 @@ export default function Login() {
               </InputLabel>
               <FilledInput
                 id="filled-adornment-password"
+                name="password"
                 type={showPassword ? "text" : "password"}
+                value={formData.password}
+                onChange={handleChange}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
@@ -102,7 +144,7 @@ export default function Login() {
             </Link>
           </CardActions>
           <CardActions>
-            <Button variant="contained" color="success">
+            <Button variant="contained" color="success" onClick={handleLogin}>
               Connexion
             </Button>
           </CardActions>

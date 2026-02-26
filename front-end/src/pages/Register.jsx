@@ -14,15 +14,31 @@ import InputLabel from "@mui/material/InputLabel";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import NativeSelect from "@mui/material/NativeSelect";
-import FormGroup from "@mui/material/FormGroup";
+import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import FormHelperText from "@mui/material/FormHelperText";
+import Radio from "@mui/material/Radio";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { styled } from "@mui/material/styles";
 
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import api from "../api/axios";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 export default function Register() {
+  //Material ui
   const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -35,6 +51,48 @@ export default function Register() {
     event.preventDefault();
   };
 
+  //import filiere and groupes
+
+  const [filieres, setFilieres] = useState([]);
+  const [groupes, setGroupes] = useState([]);
+
+  useEffect(() => {
+    api
+      .get("/filieres")
+      .then((res) => setFilieres(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  const handleFiliereChange = (e) => {
+    const filiereId = e.target.value;
+
+    setForm((prev) => ({
+      ...prev,
+      filiere: filiereId,
+      groupe: "", // reset groupe when filiere changes
+    }));
+    setError({ ...error, [`errfiliere`]: "" });
+
+    api
+      .get(`/groupes/${filiereId}`)
+      .then((res) => setGroupes(res.data))
+      .catch((err) => console.log(err));
+  };
+
+  //check duplicated email
+  async function checkEmail(email) {
+    try {
+      const res = await api.post("/check-email", { email });
+      return { valid: true, message: res.data.message };
+    } catch (err) {
+      if (err.response?.status === 409) {
+        return { valid: false, message: "Email already exists" };
+      }
+
+      return { valid: false, message: "Server error" };
+    }
+  }
+
   //Control inputs
   const [form, setForm] = useState({
     nom: "",
@@ -44,64 +102,95 @@ export default function Register() {
     password: "",
     confirmpassword: "",
     role: "",
+    image: null,
   });
-  const [error, setError] = useState({
-    errnom: "",
-    erremail: "",
-    errfiliere: "",
-    errgroupe: "",
-    errpassword: "",
-    errconfirmpassword: "",
-    errrole: "",
-  });
+  const [error, setError] = useState({});
 
   const handleChange = (e) => {
     const { name, type, value, checked, files } = e.target;
 
     setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : type === "file" ? files : value,
+      [name]:
+        type === "checkbox" ? checked : type === "file" ? files[0] : value,
     }));
+    setError({ ...error, [`err${name}`]: "" });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const validate = async () => {
+    let newError = {};
+
     if (!form.nom.trim()) {
-      setError({ ...error, errnom: "Nom et prénom sont obligatoires" });
-      return;
+      newError.errnom = "Nom et prénom sont obligatoires";
+    } else {
+      const nomRegex = /^(?=.*[A-Za-z]).{6,}$/;
+      if (!nomRegex.test(form.nom)) {
+        newError.errnom = "Nom est trop court";
+      }
     }
+
     if (!form.email.trim()) {
-      setError({ ...error, erremail: "L'email est obligatoire" });
-      return;
+      newError.erremail = "L'email est obligatoire";
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(form.email)) {
+        newError.erremail = "L'email est invalide";
+      } else {
+        const result = await checkEmail(form.email);
+        if (!result.valid) {
+          newError.erremail = result.message;
+        }
+      }
     }
-    if (!form.filiere.trim()) {
-      setError({ ...error, errfiliere: "Le flière est obligatoire" });
-      return;
-    }
-    if (!form.groupe.trim()) {
-      setError({ ...error, errgroupe: "Le groupe est obligatoire" });
-      return;
-    }
+
+    if (!form.filiere.trim())
+      newError.errfiliere = "La filière est obligatoire";
+
+    if (!form.groupe.trim()) newError.errgroupe = "Le groupe est obligatoire";
+
     if (!form.password.trim()) {
-      setError({ ...error, errpassword: "Le mot de passe est obligatoire" });
-      return;
+      newError.errpassword = "Le mot de passe est obligatoire";
+    } else {
+      const passwordRegex = /^(?=.*[A-Za-z]).{8,}$/;
+      if (!passwordRegex.test(form.password)) {
+        newError.errpassword =
+          "Mot de passe doit contenir au moins 8 caractères";
+      }
     }
-    if (!form.confirmpassword.trim()) {
-      setError({
-        ...error,
-        errconfirmpassword: "Mauvaise confirmation de mot de passe",
-      });
-      return;
-    }
-    if (!form.role.trim()) {
-      setError({ ...error, errrole: "Le rôle est obligatoire" });
-      return;
-    }
+
+    if (form.password !== form.confirmpassword || !form.confirmpassword.trim())
+      newError.errconfirmpassword = "Confirmation de mot de passe est erronée";
+
+    if (!form.role.trim()) newError.errrole = "Le rôle est obligatoire";
+    if (!form.image) newError.errimage = "L'image est obligatoire";
+
+    setError(newError);
+
+    return Object.keys(newError).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const isValid = await validate();
+    if (!isValid) return;
+
+    const data = new FormData();
+    Object.keys(form).forEach((key) => {
+      data.append(key, form[key]);
+    });
+
+    await api.post("/registration/register", data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    console.log("FORM OK", form);
+    alert("Inscription envoyée, en attente de validation");
   };
 
   return (
     <Container
-      maxWidth="sm"
+      maxWidth="md"
       style={{
         display: "flex",
         justifyContent: "center",
@@ -109,7 +198,7 @@ export default function Register() {
         height: "100vh",
       }}
     >
-      <Card sx={{ minWidth: 275 }} style={{ background: "#283593" }}>
+      <Card sx={{ minWidth: 500 }} style={{ background: "#283593" }}>
         <CardContent>
           <Typography
             gutterBottom
@@ -124,7 +213,7 @@ export default function Register() {
 
           <div style={{ display: "flex", flexDirection: "column" }}>
             <TextField
-              id="filled-basic"
+              id="filled-basic-nom"
               name="nom"
               value={form.nom}
               onChange={handleChange}
@@ -135,7 +224,7 @@ export default function Register() {
               helperText={error.errnom}
             />
             <TextField
-              id="filled-basic"
+              id="filled-basic-email"
               label="Email"
               variant="filled"
               name="email"
@@ -145,6 +234,14 @@ export default function Register() {
               helperText={error.erremail}
               style={{ background: "white", marginBottom: "11px" }}
             />
+            {error.errfiliere && (
+              <FormHelperText
+                style={{ display: "flex" }}
+                sx={{ color: "#ff6b6b" }}
+              >
+                {error.errfiliere}
+              </FormHelperText>
+            )}
             <FormControl
               style={{ background: "white", marginBottom: "11px" }}
               fullWidth
@@ -157,18 +254,32 @@ export default function Register() {
                 Filière
               </InputLabel>
               <NativeSelect
+                value={form.filiere}
+                onChange={handleFiliereChange}
                 style={{ marginLeft: "10px" }}
-                defaultValue={30}
                 inputProps={{
-                  name: "Filière",
-                  id: "uncontrolled-native",
+                  name: "filiere",
+                  id: "uncontrolled-native-filière",
                 }}
               >
-                <option value={10}>Ten</option>
-                <option value={20}>Twenty</option>
-                <option value={30}>Thirty</option>
+                <option disabled></option>
+
+                {filieres.map((filiere) => (
+                  <option key={filiere._id} value={filiere._id}>
+                    {filiere.nom}
+                  </option>
+                ))}
               </NativeSelect>
             </FormControl>
+            {error.errgroupe && (
+              <FormHelperText
+                style={{ display: "flex" }}
+                sx={{ color: "#ff6b6b" }}
+              >
+                {error.errgroupe}
+              </FormHelperText>
+            )}
+
             <FormControl style={{ background: "white" }} fullWidth>
               <InputLabel
                 style={{ marginLeft: "10px", marginTop: "5px" }}
@@ -178,19 +289,24 @@ export default function Register() {
                 Groupe
               </InputLabel>
               <NativeSelect
+                value={form.groupe}
+                onChange={handleChange}
                 style={{ marginLeft: "10px" }}
-                defaultValue={30}
                 inputProps={{
-                  name: "Filière",
-                  id: "uncontrolled-native",
+                  name: "groupe",
+                  id: "uncontrolled-native-groupe",
                 }}
               >
-                <option value={10}>Ten</option>
-                <option value={20}>Twenty</option>
-                <option value={30}>Thirty</option>
+                <option disabled></option>
+                {groupes.map((groupe) => (
+                  <option key={groupe._id} value={groupe._id}>
+                    {groupe.nom}
+                  </option>
+                ))}
               </NativeSelect>
             </FormControl>
             <FormControl
+              error={!!error.errpassword}
               sx={{ marginTop: 2, background: "white " }}
               variant="filled"
             >
@@ -201,7 +317,7 @@ export default function Register() {
                 name="password"
                 value={form.password}
                 onChange={handleChange}
-                id="filled-adornment-password"
+                id="filled-adornment-password-1"
                 type={showPassword ? "text" : "password"}
                 endAdornment={
                   <InputAdornment position="end">
@@ -222,10 +338,13 @@ export default function Register() {
                 }
               />
               {error.errpassword && (
-                <FormHelperText>{error.errpassword}</FormHelperText>
+                <FormHelperText style={{ color: "#E32727" }}>
+                  {error.errpassword}
+                </FormHelperText>
               )}
             </FormControl>
             <FormControl
+              error={!!error.errconfirmpassword}
               sx={{ marginTop: 2, background: "white " }}
               variant="filled"
             >
@@ -233,7 +352,10 @@ export default function Register() {
                 Confirme mot de passe
               </InputLabel>
               <FilledInput
-                id="filled-adornment-password"
+                id="filled-adornment-password-2"
+                name="confirmpassword"
+                value={form.confirmpassword}
+                onChange={handleChange}
                 type={showPassword ? "text" : "password"}
                 endAdornment={
                   <InputAdornment position="end">
@@ -253,48 +375,92 @@ export default function Register() {
                   </InputAdornment>
                 }
               />
+              {error.errconfirmpassword && (
+                <FormHelperText style={{ color: "#E32727" }}>
+                  {error.errconfirmpassword}
+                </FormHelperText>
+              )}
             </FormControl>
-            <FormGroup
+
+            {error.errrole && (
+              <FormHelperText
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "10px",
+                }}
+                sx={{ color: "#ff6b6b" }}
+              >
+                {error.errrole}
+              </FormHelperText>
+            )}
+            <FormControl
+              error={!!error.errrole}
               style={{
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "space-around",
                 color: "white",
                 border: "solide 2px white",
-                marginTop: "5px",
               }}
             >
-              <FormControlLabel
-                style={{ color: "white", border: "solide 2px white" }}
-                control={
-                  <Checkbox
-                    sx={{
-                      color: "white",
-                      "&.Mui-checked": {
-                        color: "black",
-                      },
-                    }}
-                  />
-                }
-                label="Formateur"
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+              >
+                <FormControlLabel
+                  value="formateur"
+                  control={<Radio />}
+                  label="Formateur"
+                />
+                <FormControlLabel
+                  value="etudiant"
+                  control={<Radio />}
+                  label="Étudiant"
+                />
+              </RadioGroup>
+            </FormControl>
+            {form.image && (
+              <Typography sx={{ color: "#78f85e" }} variant="caption">
+                {form.image.name}
+              </Typography>
+            )}
+            {error.errimage && (
+              <FormHelperText
+                style={{ display: "flex", justifyContent: "center" }}
+                sx={{ color: "#ff6b6b" }}
+              >
+                {error.errimage}
+              </FormHelperText>
+            )}
+
+            <Button
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              startIcon={<CloudUploadIcon />}
+            >
+              Choisissez votre image
+              <VisuallyHiddenInput
+                name="image"
+                type="file"
+                accept="image/*"
+                onChange={handleChange}
               />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    sx={{
-                      color: "white",
-                      "&.Mui-checked": {
-                        color: "black",
-                      },
-                    }}
-                  />
-                }
-                label="Etudiant"
-              />
-            </FormGroup>
+            </Button>
           </div>
         </CardContent>
-        <div style={{ display: "flex" }}>
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "center",
+          }}
+        >
           <CardActions>
             <Link to="/login">
               <Button

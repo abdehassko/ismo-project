@@ -6,13 +6,13 @@ const announcementSchema = new mongoose.Schema(
     description: { type: String, required: true },
     attachment: String,
     filiere: Array,
-    group: Array,
+    groupe: Array,
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Announcement", announcementSchema);

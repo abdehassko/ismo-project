@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Dialog from "@mui/material/Dialog";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
@@ -10,6 +10,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import api from "../api/axios"
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -21,34 +22,63 @@ const MenuProps = {
     },
   },
 };
-const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
-];
+
 
 const AddAnnouncementModal = ({ open, handleClose, fetchAnnouncements }) => {
   const [formData, setFormData] = useState({
   title: "",
   description: "",
-  attachment: String,
+  attachment: "",
   filiere: [],
   groupe: [],
 });
 
-  const handleChange = (e) => {
-  const { name, value } = e.target;
+//import filiere and groupes
+
+  const [filieres, setFilieres] = useState([]);
+  const [groupes, setGroupes] = useState([]);
+
+
+  useEffect(() => {
+    api
+      .get("/filieres")
+      .then((res) => {
+      console.log("filieres data:", res.data); // add this
+      setFilieres(res.data);
+    })
+      .catch((err) => console.log(err));
+  }, []);
+
+  const handleFiliereChange = (e) => {
+  const value = e.target.value;
+  const selected = typeof value === "string" ? value.split(",") : value;
 
   setFormData((prev) => ({
     ...prev,
-    [name]: typeof value === "string" ? value.split(",") : value,
+    filiere: selected,
+    groupe: [],
+  }));
+
+  // fetch groupes for all selected filieres
+  Promise.all(selected.map((id) => api.get(`/groupes/${id}`)))
+    .then((responses) => {
+      const allGroupes = responses.flatMap((res) => res.data);
+      // remove duplicates by _id
+      const unique = allGroupes.filter(
+        (g, index, self) => index === self.findIndex((x) => x._id === g._id)
+      );
+      setGroupes(unique);
+    })
+    .catch((err) => console.log(err));
+};
+
+  const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    [name]: name === "filiere" || name === "groupe"
+      ? typeof value === "string" ? value.split(",") : value
+      : value,
   }));
 };
 
@@ -57,25 +87,12 @@ const handleSubmit = async (e) => {
   console.log("SUBMITTED");
 
   try {
-    const res = await fetch("http://localhost:5000/api/announcements", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.message);
-      return;
-    }
-
-    alert("Announcement added successfully");
+    // ✅ Replace with this
+await api.post("/announcements", formData);
+alert("Announcement added successfully");
 
     // optional reset
-    setFormData({ title: "", description: "" });
+    setFormData({ title: "", description: "", attachment: "", filiere: [], groupe: [] });
 
     // close modal
     handleClose();
@@ -93,7 +110,7 @@ const handleSubmit = async (e) => {
   return (
     <Dialog open={open} onClose={handleClose} fullWidth>
       <DialogTitle>Ajouter une annonce</DialogTitle>
-      <DialogContent> <form onSubmit={handleSubmit}></form>
+      <DialogContent> <form id="announcement-form" onSubmit={handleSubmit}>
         <TextField
          style={{ marginTop: "10px" }}
           label="Title"
@@ -120,14 +137,16 @@ const handleSubmit = async (e) => {
             displayEmpty
             name="filiere"
             value={formData.filiere}
-            onChange={handleChange}
+            onChange={handleFiliereChange}
             input={<OutlinedInput />}
             renderValue={(selected) => {
               if (selected.length === 0) {
                 return <em>Filière</em>;
               }
-
-              return selected.join(", ");
+              return filieres
+                .filter((f) => selected.includes(f._id))
+                .map((f) => f.nom)
+                .join(", ");
             }}
             MenuProps={MenuProps}
             inputProps={{ "aria-label": "Without label" }}
@@ -135,9 +154,9 @@ const handleSubmit = async (e) => {
             <MenuItem disabled value="">
               <em>Filière</em>
             </MenuItem>
-            {names.map((name) => (
-              <MenuItem key={name} value={name}>
-                {name}
+            {filieres.map((filiere) => (
+              <MenuItem key={filiere._id} value={filiere._id}>
+                {filiere.nom}
               </MenuItem>
             ))}
           </Select>
@@ -154,8 +173,10 @@ const handleSubmit = async (e) => {
               if (selected.length === 0) {
                 return <em>Groupe</em>;
               }
-
-              return selected.join(", ");
+              return groupes
+                .filter((g) => selected.includes(g._id))
+                .map((g) => g.nom)
+                .join(", ");
             }}
             MenuProps={MenuProps}
             inputProps={{ "aria-label": "Without label" }}
@@ -163,18 +184,19 @@ const handleSubmit = async (e) => {
             <MenuItem disabled value="">
               <em>Groupe</em>
             </MenuItem>
-            {names.map((name) => (
-              <MenuItem key={name} value={name}>
-                {name}
+            {groupes.map((groupe) => (
+              <MenuItem key={groupe._id} value={groupe._id}>
+                {groupe.nom}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
         <TextField style={{ marginTop: "10px" }} type="file" fullWidth />
+      </form>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Annuler</Button>
-        <Button type="submit" variant="contained" sx={{ mt: 3 }}>
+        <Button type="submit" form="announcement-form" variant="contained" sx={{ mt: 3 }}>
           Ajouter
         </Button>
       </DialogActions>
