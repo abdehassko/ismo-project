@@ -26,11 +26,10 @@ const ModifyAnnouncementModal = ({ open, handleClose, announcement, fetchAnnounc
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    attachment: "",
     filiere: [],
     groupe: [],
   });
-
+  const [attachment, setAttachment] = useState(null);
   const [filieres, setFilieres] = useState([]);
   const [groupes, setGroupes] = useState([]);
 
@@ -39,7 +38,6 @@ const ModifyAnnouncementModal = ({ open, handleClose, announcement, fetchAnnounc
       setFormData({
         title: announcement.title || "",
         description: announcement.description || "",
-        attachment: announcement.attachment || "",
         filiere: announcement.filiere || [],
         groupe: announcement.groupe || [],
       });
@@ -59,8 +57,7 @@ const ModifyAnnouncementModal = ({ open, handleClose, announcement, fetchAnnounc
   }, [announcement]);
 
   useEffect(() => {
-    api
-      .get("/filieres")
+    api.get("/filieres")
       .then((res) => setFilieres(res.data))
       .catch((err) => console.log(err));
   }, []);
@@ -95,7 +92,17 @@ const ModifyAnnouncementModal = ({ open, handleClose, announcement, fetchAnnounc
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.put(`/announcements/${announcement._id}`, formData);
+      const data = new FormData();
+      data.append("title", formData.title);
+      data.append("description", formData.description);
+      data.append("filiere", JSON.stringify(formData.filiere));
+      data.append("groupe", JSON.stringify(formData.groupe));
+      if (attachment) data.append("attachment", attachment);
+
+      await api.put(`/announcements/${announcement._id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       alert("Announcement updated successfully");
       handleClose();
       fetchAnnouncements();
@@ -184,7 +191,17 @@ const ModifyAnnouncementModal = ({ open, handleClose, announcement, fetchAnnounc
               ))}
             </Select>
           </FormControl>
-          <TextField style={{ marginTop: "10px" }} type="file" fullWidth />
+          {announcement?.attachment && (
+            <p style={{ marginTop: "10px" }}>
+              Current file: <strong>{announcement.attachment}</strong>
+            </p>
+          )}
+          <TextField
+            style={{ marginTop: "10px" }}
+            type="file"
+            fullWidth
+            onChange={(e) => setAttachment(e.target.files[0])}
+          />
         </form>
       </DialogContent>
       <DialogActions>

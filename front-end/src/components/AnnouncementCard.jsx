@@ -29,6 +29,18 @@ export default function AnnouncementCard(props) {
     }
   };
 
+  const handleDownload = () => {
+    if (!props.announcements.attachment) {
+      alert("No attachment available");
+      return;
+    }
+    const url = `http://localhost:5000/uploads/announcements/${props.announcements.attachment}`;
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = props.announcements.attachment;
+    link.click();
+  };
+
   return (
     <Card
       className="card-hov"
@@ -64,10 +76,12 @@ export default function AnnouncementCard(props) {
             <IconButton
               className="hover-btn"
               aria-label="attachment"
+              onClick={handleDownload}
               style={{
                 color: "white",
                 background: "#8bc34a",
                 border: "solid #8bc34a 3px",
+                opacity: props.announcements.attachment ? 1 : 0.4,
               }}
             >
               <AttachFileIcon />

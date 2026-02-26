@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Announcement = require("../models/announcement");
+const { uploadAnnouncement } = require("../middleware/upload");
 
 router.get("/", async (req, res) => {
   try {
@@ -25,9 +26,9 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", uploadAnnouncement.single("attachment"), async (req, res) => {
   try {
-    const { title, description, attachment, filiere, groupe, createdBy } = req.body;
+    const { title, description, filiere, groupe, createdBy } = req.body;
 
     if (!title || !description) {
       return res.status(400).json({ message: "Title and description are required" });
@@ -36,9 +37,9 @@ router.post("/", async (req, res) => {
     const announcement = await Announcement.create({
       title,
       description,
-      attachment: attachment || null,
-      filiere: filiere || [],
-      groupe: groupe || [],
+      attachment: req.file ? req.file.filename : null,
+      filiere: filiere ? JSON.parse(filiere) : [],
+      groupe: groupe ? JSON.parse(groupe) : [],
       createdBy: createdBy || null,
     });
 
@@ -48,13 +49,24 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", uploadAnnouncement.single("attachment"), async (req, res) => {
   try {
-    const { title, description, attachment, filiere, groupe } = req.body;
+    const { title, description, filiere, groupe } = req.body;
+
+    const updateData = {
+      title,
+      description,
+      filiere: filiere ? JSON.parse(filiere) : [],
+      groupe: groupe ? JSON.parse(groupe) : [],
+    };
+
+    if (req.file) {
+      updateData.attachment = req.file.filename;
+    }
 
     const announcement = await Announcement.findByIdAndUpdate(
       req.params.id,
-      { title, description, attachment, filiere, groupe },
+      updateData,
       { new: true }
     );
 
