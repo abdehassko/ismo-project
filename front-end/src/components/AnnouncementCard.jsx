@@ -9,9 +9,26 @@ import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { useState } from "react";
 import ModifyAnnouncementModal from "../modals/ModifyAnnouncementModal";
+import { getUser } from "../auth";
+import api from "../api/axios";
 
 export default function AnnouncementCard(props) {
   const [openModifyAnnouncement, setOpenModifyAnnouncement] = useState(false);
+  const user = getUser();
+  const isAdminOrFormateur = user?.role === "admin" || user?.role === "formateur";
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this announcement?")) return;
+    try {
+      await api.delete(`/announcements/${props.announcements._id}`);
+      alert("Announcement deleted successfully");
+      props.fetchAnnouncements();
+    } catch (error) {
+      console.error(error);
+      alert("Server error");
+    }
+  };
+
   return (
     <Card
       className="card-hov"
@@ -46,44 +63,52 @@ export default function AnnouncementCard(props) {
           >
             <IconButton
               className="hover-btn"
-              aria-label="delete"
+              aria-label="attachment"
               style={{
                 color: "white",
-                background: " #8bc34a",
+                background: "#8bc34a",
                 border: "solid #8bc34a 3px",
               }}
             >
               <AttachFileIcon />
             </IconButton>
-            <IconButton
-              className="hover-btn"
-              aria-label="delete"
-              onClick={() => setOpenModifyAnnouncement(true)}
-              style={{
-                color: "#1769aa",
-                background: "white",
-                border: "solid #1769aa 3px",
-              }}
-            >
-              <ModeEditOutlineOutlinedIcon />
-            </IconButton>
-            <IconButton
-              className="hover-btn"
-              aria-label="delete"
-              style={{
-                color: "#b23c17",
-                background: "white",
-                border: "solid #b23c17 3px",
-              }}
-            >
-              <DeleteOutlinedIcon />
-            </IconButton>
+
+            {isAdminOrFormateur && (
+              <>
+                <IconButton
+                  className="hover-btn"
+                  aria-label="edit"
+                  onClick={() => setOpenModifyAnnouncement(true)}
+                  style={{
+                    color: "#1769aa",
+                    background: "white",
+                    border: "solid #1769aa 3px",
+                  }}
+                >
+                  <ModeEditOutlineOutlinedIcon />
+                </IconButton>
+                <IconButton
+                  className="hover-btn"
+                  aria-label="delete"
+                  onClick={handleDelete}
+                  style={{
+                    color: "#b23c17",
+                    background: "white",
+                    border: "solid #b23c17 3px",
+                  }}
+                >
+                  <DeleteOutlinedIcon />
+                </IconButton>
+              </>
+            )}
           </Grid>
         </Grid>
       </CardContent>
       <ModifyAnnouncementModal
         open={openModifyAnnouncement}
         handleClose={() => setOpenModifyAnnouncement(false)}
+        announcement={props.announcements}
+        fetchAnnouncements={props.fetchAnnouncements}
       />
     </Card>
   );
