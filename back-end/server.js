@@ -47,6 +47,9 @@ app.use("/api", usersRequests);
 const userLogin = require("./routes/userLogin");
 app.use("/api/login", userLogin);
 
+const userRoutes = require("./routes/userModify");
+app.use("/api/users", userRoutes);
+
 //===========================================================
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
