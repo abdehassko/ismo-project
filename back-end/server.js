@@ -20,6 +20,7 @@ const initRoutes = require("./routes/init");
 const authRoutes = require("./routes/registration");
 const checkEmail = require("./routes/check-email");
 const usersRequests = require("./routes/usersRequests");
+const Objects = require("./routes/Objects");
 
 app.use("/api", initRoutes);
 app.use("/api/filieres", filiereRoutes);
@@ -28,6 +29,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/registration", authRoutes);
 app.use("/api", checkEmail);
 app.use("/api", usersRequests);
+app.use("/api", Objects);
 
 //===========================================================
 
