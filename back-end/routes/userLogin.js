@@ -8,7 +8,9 @@ router.post("/", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email })
+      .populate("filiere", "nom")
+      .populate("groupe", "nom");
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
@@ -34,6 +36,7 @@ router.post("/", async (req, res) => {
         role: user.role,
         filiere: user.filiere,
         groupe: user.groupe,
+        image: user.image,
       },
     });
   } catch (error) {

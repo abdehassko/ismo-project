@@ -16,6 +16,10 @@ export default function Announcements() {
   const isAdminOrFormateur =
     user?.role === "admin" || user?.role === "formateur";
 
+  const fullName = user?.fullName;
+  const filiere = user?.filiere;
+  const groupe = user?.groupe;
+
   const fetchAnnouncements = useCallback(async () => {
     try {
       const res = await api.get("/announcements", {
@@ -39,20 +43,63 @@ export default function Announcements() {
     <div>
       <Navbar />
       <Container maxWidth="lg" style={{ marginTop: "20px" }}>
-        {isAdminOrFormateur && (
-          <Button
-            variant="outlined"
-            startIcon={<AddIcon />}
-            onClick={() => setOpenAddAnnouncement(true)}
+        <div
+          style={{
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "20px 24px",
+            borderRadius: "12px",
+            boxShadow: "0 8px 16px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <div
             style={{
-              backgroundColor: "#ffffff",
-              color: "#000000",
-              marginRight: "-170vh",
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              color: "#ffffff",
+              alignItems: "flex-start",
             }}
           >
-            Ajouter une annonce
-          </Button>
-        )}
+            <h3
+              style={{
+                margin: 0,
+                fontSize: "20px",
+                fontFamily: "CostumBold ",
+                fontWeight: "600",
+              }}
+            >
+              {fullName} ( {user.role} )
+            </h3>
+            {!isAdminOrFormateur && (
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "14px",
+                  fontFamily: "CostumL ",
+                  opacity: 0.9,
+                }}
+              >
+                {filiere.nom} | {groupe.nom}
+              </p>
+            )}
+          </div>
+          {isAdminOrFormateur && (
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={() => setOpenAddAnnouncement(true)}
+              style={{
+                backgroundColor: "#ffffff",
+                color: "#000000",
+              }}
+            >
+              Ajouter une annonce
+            </Button>
+          )}
+        </div>
         {Array.isArray(announcements) &&
           announcements.map((a) => (
             <AnnouncementCard

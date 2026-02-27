@@ -76,121 +76,121 @@ export default function Profile() {
   const handleMouseUpPassword = (event) => event.preventDefault();
 
   return (
-    <div style={{ backgroundColor: "white", height: "100vh" }}>
+    <div style={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
       <Navbar />
-      <h1 style={{ fontFamily: "ariel" }}>Votre Profile</h1>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <div>
-          <TextField
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            sx={{ m: 1, width: "25ch" }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">Nom</InputAdornment>
-                ),
-              },
+      <Box sx={{ maxWidth: 600, mx: "auto", p: 4 }}>
+        <h1
+          style={{ fontFamily: "costumBold", marginBottom: 32, color: "#333" }}
+        >
+          Votre Profil
+        </h1>
+
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          {/* Read-only section */}
+          <Box
+            sx={{
+              backgroundColor: "#fff",
+              p: 3,
+              borderRadius: 2,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
             }}
-          />
-          <TextField
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            sx={{ m: 1, width: "70ch" }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">Email</InputAdornment>
-                ),
-              },
-            }}
-          />
-          <TextField
-            name="filiere"
-            value={formData.filiere}
-            onChange={handleChange}
-            sx={{ m: 1, width: "25ch" }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">Filière</InputAdornment>
-                ),
-              },
-            }}
-          />
-          <TextField
-            name="groupe"
-            value={formData.groupe}
-            onChange={handleChange}
-            sx={{ m: 1, width: "25ch" }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">Groupe</InputAdornment>
-                ),
-              },
-            }}
-          />
-        </div>
-        <div>
-          <TextField
-            name="role"
-            value={formData.role}
-            sx={{ m: 1, width: "25ch" }}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">Role</InputAdornment>
-                ),
-                readOnly: true,
-              },
-            }}
-          />
-          <FormControl sx={{ m: 1, width: "40ch" }} variant="filled">
-            <InputLabel htmlFor="filled-adornment-password">
-              Password
-            </InputLabel>
-            <FilledInput
-              id="filled-adornment-password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              type={showPassword ? "text" : "password"}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label={
-                      showPassword
-                        ? "hide the password"
-                        : "display the password"
-                    }
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    onMouseUp={handleMouseUpPassword}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              }
+          >
+            <TextField
+              fullWidth
+              disabled
+              name="fullName"
+              label="Nom Complet"
+              value={formData.fullName}
+              variant="outlined"
+              sx={{ mb: 2 }}
             />
-          </FormControl>
-        </div>
+            <TextField
+              fullWidth
+              disabled
+              name="email"
+              label="Email"
+              value={formData.email}
+              variant="outlined"
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              disabled
+              name="filiere"
+              label="Filière"
+              value={formData.filiere?.nom || ""}
+              variant="outlined"
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              disabled
+              name="groupe"
+              label="Groupe"
+              value={formData.groupe?.nom || ""}
+              variant="outlined"
+            />
+          </Box>
+
+          {/* Editable section */}
+          <Box
+            sx={{
+              backgroundColor: "#fff",
+              p: 3,
+              borderRadius: 2,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            }}
+          >
+            <TextField
+              fullWidth
+              name="role"
+              label="Rôle"
+              value={formData.role}
+              variant="outlined"
+              InputProps={{ readOnly: true }}
+              sx={{ mb: 2 }}
+            />
+            <FormControl fullWidth variant="outlined">
+              <InputLabel>Mot de passe</InputLabel>
+              <FilledInput
+                name="password"
+                label="Mot de passe"
+                value={formData.password}
+                onChange={handleChange}
+                type={showPassword ? "text" : "password"}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      onMouseUp={handleMouseUpPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+          </Box>
+
+          {/* Submit button */}
+          <Button
+            fullWidth
+            variant="contained"
+            onClick={handleSubmit}
+            sx={{
+              backgroundColor: "#36cf83",
+              "&:hover": { backgroundColor: "#2bb86f" },
+              py: 1.5,
+              fontWeight: 600,
+              borderRadius: 1,
+            }}
+          >
+            Modifier le profil
+          </Button>
+        </Box>
       </Box>
-      <Button
-        style={{ marginTop: "24px", backgroundColor: "#36cf83" }}
-        variant="contained"
-        onClick={handleSubmit}
-      >
-        Modifier
-      </Button>
     </div>
   );
 }

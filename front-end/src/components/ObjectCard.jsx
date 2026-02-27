@@ -23,7 +23,13 @@ import EditObjectModal from "../modals/EditObjectModal";
 import { useState } from "react";
 import api from "../api/axios";
 
-export default function ObjectCard({ object, setOpenAddObject }) {
+export default function ObjectCard({
+  object,
+  setObjects,
+  setOpenAddObject,
+  publisher,
+  role,
+}) {
   const [openComments, setOpenComments] = useState(false);
   const [openEditObject, setOpenEditObject] = useState(false);
 
@@ -37,8 +43,8 @@ export default function ObjectCard({ object, setOpenAddObject }) {
   }
 
   const recovered = async (id) => {
-    await api.put(`/recovered/:id/${id}`);
-    setOpenAddObject((prev) => prev.filter((object) => object._id !== id));
+    await api.put(`/recovered/${id}`);
+    setObjects((prev) => prev.filter((object) => object._id !== id));
   };
   //datetime to str
   const pubdate = new Date(object.updatedAt).toLocaleString("fr-FR", {
@@ -113,16 +119,20 @@ export default function ObjectCard({ object, setOpenAddObject }) {
         <IconButton onClick={() => setOpenComments(true)} title="commentaires">
           <ChatBubbleIcon />
         </IconButton>
-        <IconButton onClick={() => setOpenEditObject(true)} title="modifier">
-          <EditSquareIcon />
-        </IconButton>
-        <IconButton
-          onClick={() => handleDelete()}
-          title="marquer comme récupérer"
-          style={{ color: "#4d9efa" }}
-        >
-          <CheckCircleIcon />
-        </IconButton>
+        {(publisher === object.createdBy._id || role === "admin") && (
+          <IconButton onClick={() => setOpenEditObject(true)} title="modifier">
+            <EditSquareIcon />
+          </IconButton>
+        )}
+        {(publisher === object.createdBy._id || role === "admin") && (
+          <IconButton
+            onClick={() => handleDelete()}
+            title="marquer comme récupérer"
+            style={{ color: "#4d9efa" }}
+          >
+            <CheckCircleIcon />
+          </IconButton>
+        )}
       </CardActions>
       <CommentsModal
         open={openComments}

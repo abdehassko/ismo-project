@@ -17,7 +17,7 @@ import CheckIcon from "@mui/icons-material/Check";
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { logout } from "../auth";
+import { logout, getUser } from "../auth";
 
 const notifications = [
   {
@@ -45,8 +45,12 @@ const notifications = [
 const pages = [
   { id: 1, name: "Announcements", to: "/announcements" },
   { id: 2, name: "Perdus/Trouvés", to: "/objects" },
-  { id: 3, name: "Dashboard", to: "/dashboard" },
+  { id: 2, name: "Dashbord", to: "/dashboard" },
 ];
+const user = getUser();
+
+const isAdmin = user?.role === "admin" ? true : false;
+const photo = user?.image;
 
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
@@ -125,6 +129,14 @@ function Navbar() {
                   </Typography>
                 </MenuItem>
               ))}
+
+              {isAdmin && (
+                <MenuItem onClick={handleCloseNavMenu}>
+                  <Typography sx={{ textAlign: "center" }}>
+                    Dashboard
+                  </Typography>
+                </MenuItem>
+              )}
             </Menu>
             <Menu
               anchorEl={anchorEl}
@@ -186,7 +198,10 @@ function Navbar() {
             </IconButton>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar
+                  alt="Remy Sharp"
+                  src={`http://localhost:5000/uploads/users/${photo}`}
+                />
               </IconButton>
             </Tooltip>
             <Menu
