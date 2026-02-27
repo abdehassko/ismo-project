@@ -34,10 +34,11 @@ back-end/
 
 ## ⚙️ Requirements
 
-* 
-* 
-* 
-* 
+* Node.js (v18 or higher recommended)
+* npm
+* MongoDB
+* Git
+* Modern web browser
 
 ---
 
