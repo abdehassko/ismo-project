@@ -13,6 +13,7 @@ ISMOPROJECT is a **REACT/EXPRESS JS-based academic Announecement sharing platfor
 * 🗣️ Lost Object Forum (Publish Request/Help-Comment on Request/Help)
 * 📢 Announcement
 * 🔔 Real-time notification system (new comments, approvals, announcements)
+* 📱 Version mobile / application responsive pour une meilleure expérience sur smartphones et tablettes 
 ---
 
 ## 📁 Project Structure
@@ -111,7 +112,7 @@ npm start
 
 ### 🚀 Future Improvements
 
-* 📱 Version mobile / application responsive pour une meilleure expérience sur smartphones et tablettes 
+
 * 🛡️  Email verification / Password reset
 * 🌐 Support multilingue (Espagnole / Anglais / Arabe) 
 
