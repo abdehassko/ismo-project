@@ -1,5 +1,5 @@
-"# ISMOPROJECT-Application-de-gestion-de-annonces" 
-# ISMOPROJECT
+"# ISMOCONNECT-Application-de-gestion-de-annonces" 
+# ISMOCONNECT
 
 ISMOPROJECT is a **REACT/EXPRESS JS-based academic Announecement sharing platform** that allows users to upload, browse,comment, and download educational/losted objects annonces with role-based access.
 
