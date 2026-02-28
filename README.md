@@ -98,7 +98,7 @@ npm start
 <img width="1364" height="643" alt="image" src="https://github.com/user-attachments/assets/2395c997-c3df-472a-8c7a-b60282016a03" />
 <img width="1365" height="633" alt="image" src="https://github.com/user-attachments/assets/87a56e29-b35f-4497-be45-7f738751905a" />
 <img width="1365" height="639" alt="image" src="https://github.com/user-attachments/assets/e54da60c-10e8-442e-bd15-c043fcce5762" />
-<img width="1366" height="643" alt="image" src="https://github.com/user-attachments/assets/4d02034e-9924-45c0-8602-2386a62dcfad" />
+<img width="1366" height="640" alt="image" src="https://github.com/user-attachments/assets/85aaae73-9e15-4cbd-8340-bf16e44cc18c" />
 
 
 
