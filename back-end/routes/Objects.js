@@ -57,4 +57,30 @@ router.post(
   },
 );
 
+router.put("/objects/:id", uploadObject.single("image"), async (req, res) => {
+  try {
+    const { titre, description, status } = req.body;
+
+    const object = await Object.findById(req.params.id);
+
+    if (!object) {
+      return res.status(404).json({ message: "Objet introuvable" });
+    }
+
+    object.title = titre;
+    object.description = description;
+    object.status = status;
+
+    if (req.file) {
+      object.image = req.file.filename;
+    }
+
+    await object.save();
+
+    res.json({ message: "Object modifie" });
+  } catch (e) {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+});
+
 module.exports = router;

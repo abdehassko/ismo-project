@@ -106,7 +106,6 @@ export default function Profile() {
             />
             <TextField
               fullWidth
-              disabled
               name="email"
               label="Email"
               value={formData.email}
@@ -143,11 +142,11 @@ export default function Profile() {
           >
             <TextField
               fullWidth
+              disabled
               name="role"
               label="Rôle"
               value={formData.role}
               variant="outlined"
-              InputProps={{ readOnly: true }}
               sx={{ mb: 2 }}
             />
             <FormControl fullWidth variant="outlined">

@@ -65,7 +65,7 @@ const AddObjectModal = ({ open, handleClose, setShowSuccess }) => {
     if (!form.image) newError.errimage = "L'image est obligatoire";
 
     if (!form.image.type.startsWith("image/"))
-      newError.errimage = "Sauf les images sont obligatoire";
+      newError.errimage = "Sauf les images sont approuvées";
 
     setError(newError);
 

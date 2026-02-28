@@ -29,6 +29,7 @@ export default function ObjectCard({
   setOpenAddObject,
   publisher,
   role,
+  setShowSuccess,
 }) {
   const [openComments, setOpenComments] = useState(false);
   const [openEditObject, setOpenEditObject] = useState(false);
@@ -138,11 +139,13 @@ export default function ObjectCard({
         open={openComments}
         handleClose={() => setOpenComments(false)}
         object={object}
+        setShowSuccess={setShowSuccess}
       />
       <EditObjectModal
         open={openEditObject}
         handleClose={() => setOpenEditObject(false)}
         object={object}
+        setShowSuccess={setShowSuccess}
       />
     </Card>
   );

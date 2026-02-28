@@ -126,6 +126,7 @@ export default function Objects() {
                 object={object}
                 setObjects={setObjects}
                 setOpenAddObject={setOpenAddObject}
+                setShowSuccess={setShowSuccess}
               />
             </Grid>
           ))}

@@ -45,9 +45,13 @@ const notifications = [
 const pages = [
   { id: 1, name: "Announcements", to: "/announcements" },
   { id: 2, name: "Perdus/Trouvés", to: "/objects" },
-  { id: 2, name: "Dashbord", to: "/dashboard" },
 ];
+
 const user = getUser();
+
+if (user?.role === "admin") {
+  pages.push({ id: 3, name: "Dashboard", to: "/dashboard" });
+}
 
 const isAdmin = user?.role === "admin" ? true : false;
 const photo = user?.image;
