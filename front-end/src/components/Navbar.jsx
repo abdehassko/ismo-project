@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -14,74 +14,42 @@ import MenuItem from "@mui/material/MenuItem";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import CheckIcon from "@mui/icons-material/Check";
-
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import { getUser, logout } from "../auth";
 
 const notifications = [
-  {
-    id: 1,
-    title: "wejdwe",
-    description: "jwedhwedh",
-    date: "wedhwed",
-    Filière: "wedhedh",
-  },
-  {
-    id: 1,
-    title: "wejdwe",
-    description: "jwedhwedh",
-    date: "wedhwed",
-    Filière: "wedhedh",
-  },
-  {
-    id: 1,
-    title: "wejdwe",
-    description: "jwedhwedh",
-    date: "wedhwed",
-    Filière: "wedhedh",
-  },
+  { id: 1, title: "Alert 1", description: "desc", date: "today", Filière: "A" },
+  { id: 2, title: "Alert 2", description: "desc", date: "today", Filière: "B" },
+  { id: 3, title: "Alert 3", description: "desc", date: "today", Filière: "C" },
 ];
+
 const pages = [
   { id: 1, name: "Announcements", to: "/announcements" },
   { id: 2, name: "Perdus/Trouvés", to: "/objects" },
   { id: 3, name: "Dashboard", to: "/dashboard" },
 ];
 
-const settings = [
-  { id: 1, name: "Profile", to: "/profile" },
-  { id: 2, name: "Logout", to: "/home" },
-];
-
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+  const [anchorElNotif, setAnchorElNotif] = useState(null);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const user = getUser();
+  const userImage = user?.image
+    ? `http://localhost:5000/uploads/users/${user.image}`
+    : null;
 
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+          {/* Desktop logo */}
           <CampaignIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
           <Typography
             variant="h6"
             noWrap
             component="a"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -95,64 +63,46 @@ function Navbar() {
             ISMO
           </Typography>
 
+          {/* Mobile hamburger */}
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
+              aria-label="navigation menu"
+              onClick={(e) => setAnchorElNav(e.currentTarget)}
               color="inherit"
             >
               <MenuIcon />
             </IconButton>
             <Menu
-              id="menu-appbar"
               anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
               keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
+              transformOrigin={{ vertical: "top", horizontal: "left" }}
               open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
+              onClose={() => setAnchorElNav(null)}
               sx={{ display: { xs: "block", md: "none" } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page.id} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    {page.name}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={() => setAnchorEl(null)}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
-            >
-              {notifications.map((n) => (
-                <MenuItem key={n.id}>
-                  {n.title}
-                  <IconButton title="marquer comme lue">
-                    <CheckIcon />
-                  </IconButton>
-                </MenuItem>
+                <Link
+                  key={page.id}
+                  to={page.to}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <MenuItem onClick={() => setAnchorElNav(null)}>
+                    <Typography>{page.name}</Typography>
+                  </MenuItem>
+                </Link>
               ))}
             </Menu>
           </Box>
+
+          {/* Mobile logo */}
           <CampaignIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
           <Typography
             variant="h5"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -164,8 +114,10 @@ function Navbar() {
               textDecoration: "none",
             }}
           >
-            LOGO
+            ISMO
           </Typography>
+
+          {/* Desktop nav links */}
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Link
@@ -173,55 +125,70 @@ function Navbar() {
                 to={page.to}
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                <Button
-                  onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: "white", display: "block" }}
-                >
+                <Button sx={{ my: 2, color: "white", display: "block" }}>
                   {page.name}
                 </Button>
               </Link>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 0 }}>
-            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
-              <NotificationsIcon
-                style={{ color: "white", marginRight: "10px" }}
-              />
+
+          {/* Right side: notifications + avatar */}
+          <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center" }}>
+            {/* Notifications */}
+            <IconButton onClick={(e) => setAnchorElNotif(e.currentTarget)}>
+              <NotificationsIcon style={{ color: "white" }} />
             </IconButton>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+            <Menu
+              anchorEl={anchorElNotif}
+              open={Boolean(anchorElNotif)}
+              onClose={() => setAnchorElNotif(null)}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
+            >
+              {notifications.map((n) => (
+                <MenuItem key={n.id}>
+                  {n.title}
+                  <IconButton title="marquer comme lue" size="small">
+                    <CheckIcon fontSize="small" />
+                  </IconButton>
+                </MenuItem>
+              ))}
+            </Menu>
+
+            {/* User avatar */}
+            <Tooltip title={user?.fullName || "User"}>
+              <IconButton onClick={(e) => setAnchorElUser(e.currentTarget)} sx={{ p: 0, ml: 1 }}>
+                <Avatar
+                  alt={user?.fullName || "User"}
+                  src={userImage}
+                />
               </IconButton>
             </Tooltip>
             <Menu
               sx={{ mt: "45px" }}
-              id="menu-appbar"
               anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
+              anchorOrigin={{ vertical: "top", horizontal: "right" }}
               keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
               open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
+              onClose={() => setAnchorElUser(null)}
             >
-              {settings.map((setting) => (
-                <Link
-                  style={{ textDecoration: "none", color: "inherit" }}
-                  key={setting.id}
-                  to={setting.to}
-                >
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography sx={{ textAlign: "center" }}>
-                      {setting.name}
-                    </Typography>
-                  </MenuItem>
-                </Link>
-              ))}
+              <Link
+                to="/profile"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                <MenuItem onClick={() => setAnchorElUser(null)}>
+                  <Typography>Profile</Typography>
+                </MenuItem>
+              </Link>
+              <MenuItem
+                onClick={() => {
+                  setAnchorElUser(null);
+                  logout();
+                }}
+              >
+                <Typography>Logout</Typography>
+              </MenuItem>
             </Menu>
           </Box>
         </Toolbar>
@@ -229,4 +196,5 @@ function Navbar() {
     </AppBar>
   );
 }
+
 export default Navbar;
