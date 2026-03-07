@@ -118,7 +118,6 @@ npm start
 ### 🚀 Future Improvements
 
 
-* 🛡️  Email verification / Password reset
 * 🌐 Support multilingue (Espagnole / Anglais / Arabe) 
 
 
