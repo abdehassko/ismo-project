@@ -22,15 +22,21 @@ mongoose
 const announcementRoutes = require("./routes/announcements");
 app.use("/api/announcements", announcementRoutes);
 
+// notifications
+const notificationRoutes = require("./routes/notifications");
+app.use("/api/notifications", notificationRoutes);
+
 // abderrahim
 const filiereRoutes = require("./routes/filiere");
 const groupeRoutes = require("./routes/groupe");
+const initRoutes = require("./routes/init");
 const authRoutes = require("./routes/registration");
 const checkEmail = require("./routes/check-email");
 const Objects = require("./routes/Objects");
 const usersRequests = require("./routes/usersRequests");
 const Comments = require("./routes/comments");
 
+app.use("/api", initRoutes);
 app.use("/api/filieres", filiereRoutes);
 app.use("/api/groupes", groupeRoutes);
 app.use("/api/registration", authRoutes);

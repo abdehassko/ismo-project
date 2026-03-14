@@ -3,7 +3,7 @@ const router = express.Router();
 const Announcement = require("../models/announcement");
 const Notification = require("../models/notification");
 const User = require("../models/user");
-const { uploadAnnouncement } = require("../middleware/upload");
+const { uploadAnnouncement } = require("../middlewares/upload");
 const sendEmail = require("../services/emailService");
 
 router.get("/", async (req, res) => {
