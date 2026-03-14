@@ -15,10 +15,12 @@ import api from "../api/axios";
 export default function AnnouncementCard(props) {
   const [openModifyAnnouncement, setOpenModifyAnnouncement] = useState(false);
   const user = getUser();
-  const isAdminOrFormateur = user?.role === "admin" || user?.role === "formateur";
+  const isAdminOrFormateur =
+    user?.role === "admin" || user?.role === "formateur";
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this announcement?")) return;
+    if (!window.confirm("Are you sure you want to delete this announcement?"))
+      return;
     try {
       await api.delete(`/announcements/${props.announcements._id}`);
       alert("Announcement deleted successfully");

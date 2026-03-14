@@ -22,7 +22,12 @@ const MenuProps = {
   },
 };
 
-const ModifyAnnouncementModal = ({ open, handleClose, announcement, fetchAnnouncements }) => {
+const ModifyAnnouncementModal = ({
+  open,
+  handleClose,
+  announcement,
+  fetchAnnouncements,
+}) => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -34,30 +39,31 @@ const ModifyAnnouncementModal = ({ open, handleClose, announcement, fetchAnnounc
   const [groupes, setGroupes] = useState([]);
 
   useEffect(() => {
-    if (announcement) {
-      setFormData({
-        title: announcement.title || "",
-        description: announcement.description || "",
-        filiere: announcement.filiere || [],
-        groupe: announcement.groupe || [],
-      });
+    if (!announcement) return;
+    setFormData({
+      title: announcement.title || "",
+      description: announcement.description || "",
+      filiere: announcement.filiere || [],
+      groupe: announcement.groupe || [],
+    });
+  }, [announcement?._id]);
+  useEffect(() => {
+    if (!announcement?.filiere?.length) return;
 
-      if (announcement.filiere?.length > 0) {
-        Promise.all(announcement.filiere.map((id) => api.get(`/groupes/${id}`)))
-          .then((responses) => {
-            const allGroupes = responses.flatMap((res) => res.data);
-            const unique = allGroupes.filter(
-              (g, index, self) => index === self.findIndex((x) => x._id === g._id)
-            );
-            setGroupes(unique);
-          })
-          .catch((err) => console.log(err));
-      }
-    }
-  }, [announcement]);
+    Promise.all(announcement.filiere.map((id) => api.get(`/groupes/${id}`)))
+      .then((responses) => {
+        const allGroupes = responses.flatMap((res) => res.data);
+        const unique = allGroupes.filter(
+          (g, index, self) => index === self.findIndex((x) => x._id === g._id),
+        );
+        setGroupes(unique);
+      })
+      .catch((err) => console.log(err));
+  }, [announcement?._id]);
 
   useEffect(() => {
-    api.get("/filieres")
+    api
+      .get("/filieres")
       .then((res) => setFilieres(res.data))
       .catch((err) => console.log(err));
   }, []);
@@ -72,7 +78,7 @@ const ModifyAnnouncementModal = ({ open, handleClose, announcement, fetchAnnounc
       .then((responses) => {
         const allGroupes = responses.flatMap((res) => res.data);
         const unique = allGroupes.filter(
-          (g, index, self) => index === self.findIndex((x) => x._id === g._id)
+          (g, index, self) => index === self.findIndex((x) => x._id === g._id),
         );
         setGroupes(unique);
       })
@@ -83,9 +89,12 @@ const ModifyAnnouncementModal = ({ open, handleClose, announcement, fetchAnnounc
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "groupe"
-        ? typeof value === "string" ? value.split(",") : value
-        : value,
+      [name]:
+        name === "groupe"
+          ? typeof value === "string"
+            ? value.split(",")
+            : value
+          : value,
     }));
   };
 
@@ -206,7 +215,11 @@ const ModifyAnnouncementModal = ({ open, handleClose, announcement, fetchAnnounc
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Annuler</Button>
-        <Button type="submit" form="modify-announcement-form" variant="contained">
+        <Button
+          type="submit"
+          form="modify-announcement-form"
+          variant="contained"
+        >
           Modifier
         </Button>
       </DialogActions>

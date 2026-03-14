@@ -25,17 +25,19 @@ app.use("/api/announcements", announcementRoutes);
 // abderrahim
 const filiereRoutes = require("./routes/filiere");
 const groupeRoutes = require("./routes/groupe");
-const initRoutes = require("./routes/init");
 const authRoutes = require("./routes/registration");
 const checkEmail = require("./routes/check-email");
+const Objects = require("./routes/Objects");
 const usersRequests = require("./routes/usersRequests");
+const Comments = require("./routes/comments");
 
-app.use("/api", initRoutes);
 app.use("/api/filieres", filiereRoutes);
 app.use("/api/groupes", groupeRoutes);
 app.use("/api/registration", authRoutes);
 app.use("/api", checkEmail);
 app.use("/api", usersRequests);
+app.use("/api", Objects);
+app.use("/api", Comments);
 
 // idriss
 const userLogin = require("./routes/userLogin");

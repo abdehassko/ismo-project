@@ -19,10 +19,13 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import Radio from "@mui/material/Radio";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 import { styled } from "@mui/material/styles";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+
 import api from "../api/axios";
 
 const VisuallyHiddenInput = styled("input")({
@@ -92,6 +95,7 @@ export default function Register() {
       return { valid: false, message: "Server error" };
     }
   }
+  const navigate = useNavigate();
 
   //Control inputs
   const [form, setForm] = useState({
@@ -105,6 +109,15 @@ export default function Register() {
     image: null,
   });
   const [error, setError] = useState({});
+
+  const [showSuccess, setShowSuccess] = useState(false);
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setShowSuccess(false);
+  };
 
   const handleChange = (e) => {
     const { name, type, value, checked, files } = e.target;
@@ -163,6 +176,8 @@ export default function Register() {
 
     if (!form.role.trim()) newError.errrole = "Le rôle est obligatoire";
     if (!form.image) newError.errimage = "L'image est obligatoire";
+    if (!form.image.type.startsWith("image/"))
+      newError.errimage = "Sauf les images sont obligatoire";
 
     setError(newError);
 
@@ -180,12 +195,28 @@ export default function Register() {
       data.append(key, form[key]);
     });
 
-    await api.post("/registration/register", data, {
-      headers: { "Content-Type": "multipart/form-data" },
+    try {
+      const res = await api.post("/registration/register", data);
+      console.log(res.data);
+    } catch (error) {
+      console.log("Full error:", error.response);
+    }
+    setForm({
+      nom: "",
+      email: "",
+      filiere: "",
+      groupe: "",
+      password: "",
+      confirmpassword: "",
+      role: "",
+      image: null,
     });
 
-    console.log("FORM OK", form);
-    alert("Inscription envoyée, en attente de validation");
+    setShowSuccess(true);
+
+    setTimeout(() => {
+      navigate("/login");
+    }, 4000);
   };
 
   return (
@@ -478,6 +509,23 @@ export default function Register() {
           </CardActions>
         </div>
       </Card>
+      {showSuccess && (
+        <Snackbar
+          open={showSuccess}
+          autoHideDuration={4000}
+          onClose={handleClose}
+        >
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            Demande D'inscription reçu veuillez attendre la validation de votre
+            compte (24h)
+          </Alert>
+        </Snackbar>
+      )}
     </Container>
   );
 }

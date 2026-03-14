@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user");
+const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -8,7 +8,9 @@ router.post("/", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email })
+      .populate("filiere", "nom")
+      .populate("groupe", "nom");
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
@@ -21,7 +23,7 @@ router.post("/", async (req, res) => {
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     res.json({
@@ -34,6 +36,7 @@ router.post("/", async (req, res) => {
         role: user.role,
         filiere: user.filiere,
         groupe: user.groupe,
+        image: user.image,
       },
     });
   } catch (error) {

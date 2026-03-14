@@ -34,7 +34,8 @@ const AddAnnouncementModal = ({ open, handleClose, fetchAnnouncements }) => {
   const [groupes, setGroupes] = useState([]);
 
   useEffect(() => {
-    api.get("/filieres")
+    api
+      .get("/filieres")
       .then((res) => setFilieres(res.data))
       .catch((err) => console.log(err));
   }, []);
@@ -49,7 +50,7 @@ const AddAnnouncementModal = ({ open, handleClose, fetchAnnouncements }) => {
       .then((responses) => {
         const allGroupes = responses.flatMap((res) => res.data);
         const unique = allGroupes.filter(
-          (g, index, self) => index === self.findIndex((x) => x._id === g._id)
+          (g, index, self) => index === self.findIndex((x) => x._id === g._id),
         );
         setGroupes(unique);
       })
@@ -60,9 +61,12 @@ const AddAnnouncementModal = ({ open, handleClose, fetchAnnouncements }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "groupe"
-        ? typeof value === "string" ? value.split(",") : value
-        : value,
+      [name]:
+        name === "groupe"
+          ? typeof value === "string"
+            ? value.split(",")
+            : value
+          : value,
     }));
   };
 
@@ -86,7 +90,7 @@ const AddAnnouncementModal = ({ open, handleClose, fetchAnnouncements }) => {
       handleClose();
       fetchAnnouncements();
     } catch (error) {
-      console.error(error);
+      console.log(error);
       alert("Server error");
     }
   };

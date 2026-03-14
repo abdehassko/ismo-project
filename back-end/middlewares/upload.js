@@ -19,7 +19,17 @@ const userStorage = multer.diskStorage({
   },
 });
 
+const objectStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/objects/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
 const uploadAnnouncement = multer({ storage: announcementStorage });
 const uploadUser = multer({ storage: userStorage });
+const uploadObject = multer({ storage: objectStorage });
 
-module.exports = { uploadAnnouncement, uploadUser };
+module.exports = { uploadAnnouncement, uploadUser, uploadObject };
