@@ -25,7 +25,7 @@ export default function Announcements() {
       const res = await api.get("/announcements", {
         params: {
           filiereId: user?.filiere,
-          groupeId: user?.groupe,
+          groupeId: user?.groupe._id,
           role: user?.role,
         },
       });

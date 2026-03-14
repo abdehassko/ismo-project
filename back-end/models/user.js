@@ -15,6 +15,8 @@ const userSchema = new mongoose.Schema(
     },
     image: { type: String, required: true },
     isApproved: { type: Boolean, default: false },
+    resetCode: String,
+    resetCodeExpire: Date,
   },
   { timestamps: true },
 );

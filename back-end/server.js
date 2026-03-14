@@ -35,6 +35,7 @@ const checkEmail = require("./routes/check-email");
 const Objects = require("./routes/Objects");
 const usersRequests = require("./routes/usersRequests");
 const Comments = require("./routes/comments");
+const checkEmailForReset = require("./routes/check-email-for-reset");
 
 app.use("/api", initRoutes);
 app.use("/api/filieres", filiereRoutes);
@@ -44,6 +45,7 @@ app.use("/api", checkEmail);
 app.use("/api", usersRequests);
 app.use("/api", Objects);
 app.use("/api", Comments);
+app.use("/api", checkEmailForReset);
 
 // idriss
 const userLogin = require("./routes/userLogin");

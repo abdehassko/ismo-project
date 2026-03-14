@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();
 const Announcement = require("../models/announcement");
 const Notification = require("../models/notification");
-const User = require("../models/user");
+const User = require("../models/User");
 const { uploadAnnouncement } = require("../middlewares/upload");
 const sendEmail = require("../services/emailService");
 
 router.get("/", async (req, res) => {
   try {
-    const { filiereId, groupeId, role } = req.query;
+    const { groupeId, role } = req.query;
 
     if (role === "admin" || role === "formateur") {
       const announcements = await Announcement.find();
@@ -16,11 +16,7 @@ router.get("/", async (req, res) => {
     }
 
     const announcements = await Announcement.find({
-      $or: [
-        { filiere: { $in: [filiereId] } },
-        { groupe: { $in: [groupeId] } },
-        { filiere: { $size: 0 }, groupe: { $size: 0 } },
-      ],
+      groupe: { $in: [groupeId] },
     });
 
     res.status(200).json(announcements);
@@ -34,7 +30,9 @@ router.post("/", uploadAnnouncement.single("attachment"), async (req, res) => {
     const { title, description, filiere, groupe, createdBy } = req.body;
 
     if (!title || !description) {
-      return res.status(400).json({ message: "Title and description are required" });
+      return res
+        .status(400)
+        .json({ message: "Title and description are required" });
     }
 
     const parsedFiliere = filiere ? JSON.parse(filiere) : [];
@@ -52,10 +50,7 @@ router.post("/", uploadAnnouncement.single("attachment"), async (req, res) => {
     // find approved users that belong to the filiere or groupe
     const users = await User.find({
       isApproved: true,
-      $or: [
-        { filiere: { $in: parsedFiliere } },
-        { groupe: { $in: parsedGroupe } },
-      ],
+      $or: [{ groupe: { $in: parsedGroupe } }],
     });
 
     // create notifications
@@ -140,7 +135,7 @@ router.post("/", uploadAnnouncement.single("attachment"), async (req, res) => {
           </table>
         </body>
         </html>
-        `
+        `,
       );
     }
 
@@ -150,36 +145,40 @@ router.post("/", uploadAnnouncement.single("attachment"), async (req, res) => {
   }
 });
 
-router.put("/:id", uploadAnnouncement.single("attachment"), async (req, res) => {
-  try {
-    const { title, description, filiere, groupe } = req.body;
+router.put(
+  "/:id",
+  uploadAnnouncement.single("attachment"),
+  async (req, res) => {
+    try {
+      const { title, description, filiere, groupe } = req.body;
 
-    const updateData = {
-      title,
-      description,
-      filiere: filiere ? JSON.parse(filiere) : [],
-      groupe: groupe ? JSON.parse(groupe) : [],
-    };
+      const updateData = {
+        title,
+        description,
+        filiere: filiere ? JSON.parse(filiere) : [],
+        groupe: groupe ? JSON.parse(groupe) : [],
+      };
 
-    if (req.file) {
-      updateData.attachment = req.file.filename;
+      if (req.file) {
+        updateData.attachment = req.file.filename;
+      }
+
+      const announcement = await Announcement.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        { new: true },
+      );
+
+      if (!announcement) {
+        return res.status(404).json({ message: "Announcement not found" });
+      }
+
+      res.status(200).json(announcement);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
     }
-
-    const announcement = await Announcement.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true }
-    );
-
-    if (!announcement) {
-      return res.status(404).json({ message: "Announcement not found" });
-    }
-
-    res.status(200).json(announcement);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-});
+  },
+);
 
 router.delete("/:id", async (req, res) => {
   try {

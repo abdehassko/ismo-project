@@ -55,7 +55,6 @@ export default function Login() {
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event) => event.preventDefault();
   const handleMouseUpPassword = (event) => event.preventDefault();
-
   return (
     <Container
       maxWidth="sm"
@@ -109,6 +108,14 @@ export default function Login() {
                 }
               />
             </FormControl>
+            <div style={{ marginTop: 20, textAlign: "center" }}>
+              <Typography sx={{ color: "white", fontSize: 16, marginBottom: 1 }}>
+                Vous avez oublié votre mot de passe ?<br />
+                <Link to="/forgot-password" style={{ color: "#FFD600", textDecoration: "underline", fontWeight: "bold" }}>
+                  Cliquez ici pour le réinitialiser
+                </Link>
+              </Typography>
+            </div>
           </div>
         </CardContent>
         <div style={{ display: "flex" }}>

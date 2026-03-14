@@ -9,6 +9,7 @@ import Objects from "./pages/Objects";
 import Profile from "./pages/Profile";
 import Notfound from "./pages/Notfound";
 import Home from "./pages/Home";
+import Forgotpassword from "./pages/forgot-password";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<Forgotpassword />} />
 
           <Route
             path="/dashboard"

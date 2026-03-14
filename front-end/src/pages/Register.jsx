@@ -85,11 +85,11 @@ export default function Register() {
   //check duplicated email
   async function checkEmail(email) {
     try {
-      const res = await api.post("/check-email", { email });
+      const res = await api.post("/send-reset-code", { email });
       return { valid: true, message: res.data.message };
     } catch (err) {
-      if (err.response?.status === 409) {
-        return { valid: false, message: "Email already exists" };
+      if (err.response?.status === 404) {
+        return { valid: false, message: "Email non trouvé" };
       }
 
       return { valid: false, message: "Server error" };
@@ -175,9 +175,12 @@ export default function Register() {
       newError.errconfirmpassword = "Confirmation de mot de passe est erronée";
 
     if (!form.role.trim()) newError.errrole = "Le rôle est obligatoire";
-    if (!form.image) newError.errimage = "L'image est obligatoire";
-    if (!form.image.type.startsWith("image/"))
-      newError.errimage = "Sauf les images sont obligatoire";
+
+    if (!form.image) {
+      newError.errimage = "L'image est obligatoire";
+    } else if (!form.image.type.startsWith("image/")) {
+      newError.errimage = "Seules les images sont autorisées";
+    }
 
     setError(newError);
 

@@ -62,10 +62,11 @@ const AddObjectModal = ({ open, handleClose, setShowSuccess }) => {
       newError.errstatus = "L'état est obligatoire";
     }
 
-    if (!form.image) newError.errimage = "L'image est obligatoire";
-
-    if (!form.image.type.startsWith("image/"))
-      newError.errimage = "Sauf les images sont approuvées";
+    if (!form.image) {
+      newError.errimage = "L'image est obligatoire";
+    } else if (!form.image.type.startsWith("image/")) {
+      newError.errimage = "Seules les images sont autorisées";
+    }
 
     setError(newError);
 
