@@ -3,7 +3,7 @@ const router = express.Router();
 const Comment = require("../models/Comment");
 const Object = require("../models/Object");
 const Notification = require("../models/notification");
-const User = require("../models/user");
+const User = require("../models/User");
 const sendEmail = require("../services/emailService");
 
 router.get("/comments/:objectId", async (req, res) => {
@@ -124,7 +124,7 @@ router.post("/comments/", async (req, res) => {
           </table>
         </body>
         </html>
-        `
+        `,
       );
     }
 
