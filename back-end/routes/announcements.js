@@ -66,7 +66,7 @@ router.post("/", uploadAnnouncement.single("attachment"), async (req, res) => {
       await Notification.insertMany(notifications);
     }
 
-    // send emails
+    // send emails to users
     for (const user of users) {
       await sendEmail(
         user.email,
