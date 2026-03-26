@@ -3,6 +3,16 @@ const router = express.Router();
 const Object = require("../models/Object");
 const { uploadObject } = require("../middlewares/upload");
 
+
+router.get('/debug-raw', async (req, res) => {
+  const data = await mongoose.connection.db
+    .collection('objects')
+    .find({})
+    .toArray();
+
+  res.json(data);
+});
+
 // All Active Objects
 router.get("/Objects", async (req, res) => {
   try {
