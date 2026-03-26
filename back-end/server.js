@@ -18,6 +18,13 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error(err));
 
+mongoose.connection.once('open', async () => {
+  console.log("✅ Connected DB:", mongoose.connection.name);
+
+  const collections = await mongoose.connection.db.listCollections().toArray();
+  console.log("📦 Collections:", collections.map(c => c.name));
+});
+
 // announcements
 const announcementRoutes = require("./routes/announcements");
 app.use("/api/announcements", announcementRoutes);
