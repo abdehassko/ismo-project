@@ -135,7 +135,7 @@ router.put(
               <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
                 <tr>
                   <td align="center">
-                    <a href="http://localhost:3000/login" style="display:inline-block;background:linear-gradient(135deg,#0e47c5,#1a6bff);color:#ffffff;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;text-decoration:none;padding:16px 48px;border-radius:50px;letter-spacing:0.3px;box-shadow:0 6px 20px rgba(26,107,255,0.35);">
+                    <a href="https://ismotetouan.netlify.app/login" style="display:inline-block;background:linear-gradient(135deg,#0e47c5,#1a6bff);color:#ffffff;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;text-decoration:none;padding:16px 48px;border-radius:50px;letter-spacing:0.3px;box-shadow:0 6px 20px rgba(26,107,255,0.35);">
                       Accéder à mon compte →
                     </a>
                   </td>

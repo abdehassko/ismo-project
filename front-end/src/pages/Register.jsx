@@ -85,10 +85,10 @@ export default function Register() {
   //check duplicated email
   async function checkEmail(email) {
     try {
-      const res = await api.post("/send-reset-code", { email });
+      const res = await api.post("/check-email", { email });
       return { valid: true, message: res.data.message };
     } catch (err) {
-      if (err.response?.status === 404) {
+      if (err.response?.status === 409) {
         return { valid: false, message: "Email non trouvé" };
       }
 
