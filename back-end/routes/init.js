@@ -1,11 +1,32 @@
 const express = require("express");
 const Filiere = require("../models/Filiere");
 const Groupe = require("../models/Groupe");
+const User = require("../models/User"); // Add this import
+const bcrypt = require("bcrypt"); // Add this import if not already imported
 
 const router = express.Router();
 
 router.get("/init", async (req, res) => {
   try {
+    // Check if admin already exists
+    const existingAdmin = await User.findOne({ email: "admin@ismo.com" });
+    
+    if (!existingAdmin) {
+      // Create admin user
+      const hashedPassword = await bcrypt.hash("admin123", 10);
+      await User.create({
+        nom: "Admin",
+        prenom: "ISMO",
+        email: "admin@ismo.com",
+        password: hashedPassword,
+        role: "admin",
+        status: "accepted",
+        filiere: "Admin",
+        telephone: "0600000000"
+      });
+      console.log("Admin user created ✅");
+    }
+
     // Create filières
     const dd = await Filiere.create({ nom: "Développement Digital" });
     const id = await Filiere.create({ nom: "Infrastructure Digitale" });
@@ -44,7 +65,7 @@ router.get("/init", async (req, res) => {
 
     res
       .status(200)
-      .send("Database initialized with actual filières and groupes ✅");
+      .send("Database initialized with filières, groupes and admin account ✅");
   } catch (error) {
     console.error(error);
     res.status(500).send("Initialization failed ❌");
