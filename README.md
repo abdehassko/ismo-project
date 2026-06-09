@@ -17,23 +17,29 @@
 
 ## 📁 Project Structure
 
+## Project Structure
+
+```text
 ismo-project/
-├── front-end/ # React application
-│ ├── components/
-│ ├── pages/
-│ ├── modals/
-│ ├── api/
-│ └── Dockerfile
-├── back-end/ # Express API
-│ ├── models/
-│ ├── routes/
-│ ├── middlewares/
-│ ├── services/
-│ ├── uploads/
-│ └── Dockerfile
-├── docker-compose.yml # Docker services orchestration
-├── nginx.conf # Nginx reverse proxy configuration
+├── front-end/                # React application
+│   ├── components/
+│   ├── pages/
+│   ├── modals/
+│   ├── api/
+│   └── Dockerfile
+│
+├── back-end/                 # Express API
+│   ├── models/
+│   ├── routes/
+│   ├── middlewares/
+│   ├── services/
+│   ├── uploads/
+│   └── Dockerfile
+│
+├── docker-compose.yml        # Docker services orchestration
+├── nginx.conf                # Nginx reverse proxy configuration
 └── README.md
+```
 
 ## ⚙️ Requirements
 
